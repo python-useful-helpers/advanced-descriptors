@@ -146,4 +146,4 @@ For code checking several CI systems is used in parallel:
 
 CD system
 =========
-`Travis CI: <https://travis-ci.org/penguinolog/logwrap>`_ is used for package delivery on PyPI.
+`Travis CI: <https://travis-ci.org/penguinolog/advanced-descriptors>`_ is used for package delivery on PyPI.
