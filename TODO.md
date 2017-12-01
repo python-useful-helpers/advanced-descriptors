@@ -1,3 +1,3 @@
-* [ ] CD system
+* [X] CD system
 
 * [ ] Documentation
