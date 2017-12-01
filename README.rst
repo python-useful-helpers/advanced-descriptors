@@ -28,45 +28,45 @@ Create instance with arguments:
 
 .. code-block:: python
 
-    def imeth(instance):
-        return instance.value
+  def imeth(instance):
+      return instance.value
 
-    def cmeth(owner):
-        return owner.value
+  def cmeth(owner):
+      return owner.value
 
-    class Target(object):
-        value = 1
+  class Target(object):
+      value = 1
 
-        def __init__(self):
-            self.value = 2
-        getval = advanced_descriptors.SeparateClassMethod(
-            imeth, cmeth
-        )
+      def __init__(self):
+          self.value = 2
+      getval = advanced_descriptors.SeparateClassMethod(
+          imeth, cmeth
+      )
 
 Create instance wrapping as decorator:
 
 .. code-block:: python
 
-    class Target(object):
-        value = 1
+  class Target(object):
+      value = 1
 
-        def __init__(self):
-            self.value = 2
+      def __init__(self):
+          self.value = 2
 
-        @advanced_descriptors.SeparateClassMethod
-        def getval(self):
-            return self.value
+      @advanced_descriptors.SeparateClassMethod
+      def getval(self):
+          return self.value
 
-        @getval.class_method
-        def getval(cls):
-            return cls.value
+      @getval.class_method
+      def getval(cls):
+          return cls.value
 
 Cases with method only and classmethod only is useless:
 method as-is and `@classmethod` should be used in corresponding cases.
 
 .. note::
 
-    classmethod receives class as argument. IDE's don't know about custom descriptors and substitutes `self` by default.
+  classmethod receives class as argument. IDE's don't know about custom descriptors and substitutes `self` by default.
 
 AdvancedProperty
 ----------------
@@ -78,46 +78,46 @@ Usage examples:
 
 1. In addition to normal property API:
 
-    .. code-block:: python
+  .. code-block:: python
 
-        class Target(object):
-            _value = 777
+    class Target(object):
+        _value = 777
 
-            def __init__(self):
-                self._value = 42
+        def __init__(self):
+            self._value = 42
 
-            @advanced_descriptors.AdvancedProperty
-            def val(self):
-                return self._value
+        @advanced_descriptors.AdvancedProperty
+        def val(self):
+            return self._value
 
-            @val.setter
-            def val(self, value):
-                self._value = value
+        @val.setter
+        def val(self, value):
+            self._value = value
 
-            @val.deleter
-            def val(self):
-                self._value = 0
+        @val.deleter
+        def val(self):
+            self._value = 0
 
-            @val.cgetter
-            def val(cls):
-                return cls._value
+        @val.cgetter
+        def val(cls):
+            return cls._value
 
 2. Use class-wide getter for instance too:
 
-    .. code-block:: python
+  .. code-block:: python
 
-        class Target(object):
-            _value = 1
+    class Target(object):
+        _value = 1
 
-            val = advanced_descriptors.AdvancedProperty()
+        val = advanced_descriptors.AdvancedProperty()
 
-            @val.cgetter
-                def val(cls):
-                    return cls._value
+        @val.cgetter
+            def val(cls):
+                return cls._value
 
 .. note::
 
-    class-wide getter receives class as argument. IDE's don't know about custom descriptors and substitutes `self` by default.
+  class-wide getter receives class as argument. IDE's don't know about custom descriptors and substitutes `self` by default.
 
 Testing
 =======
@@ -126,15 +126,15 @@ Test environments available:
 
 ::
 
-    pep8
-    py27
-    py34
-    py35
-    py36
-    pypy
-    pypy3
-    pylint
-    pep257
+  pep8
+  py27
+  py34
+  py35
+  py36
+  pypy
+  pypy3
+  pylint
+  pep257
 
 CI systems
 ==========
