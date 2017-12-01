@@ -245,7 +245,7 @@ class AdvancedProperty(object):
     def getter(
             self,
             fget  # type: GetterType
-    ):  # type: (...) -> None
+    ):  # type: (...) -> AdvancedProperty
         """Descriptor to change the getter on a property.
 
         :param fget: new normal getter.
