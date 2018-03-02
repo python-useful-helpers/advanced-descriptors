@@ -18,11 +18,10 @@
 import six
 
 try:  # pragma: no cover
-    import typing
-    TargetFunctionType = typing.Optional[typing.Callable[..., typing.Any]]
+    import typing  # pylint: disable=unused-import
 except ImportError:  # pragma: no cover
+    # noinspection PyRedeclaration
     typing = None
-    TargetFunctionType = None
 
 __all__ = (
     'SeparateClassMethod',
@@ -104,8 +103,8 @@ class SeparateClassMethod(object):
 
     def __init__(
             self,
-            imeth=None,  # type: TargetFunctionType
-            cmeth=None,  # type: TargetFunctionType
+            imeth=None,  # type: typing.Optional[typing.Callable]
+            cmeth=None,  # type: typing.Optional[typing.Callable]
     ):
         """Separate class method and instance methods.
 
@@ -117,7 +116,11 @@ class SeparateClassMethod(object):
         self.__instance_method = imeth
         self.__class_method = cmeth
 
-    def __get__(self, instance, owner):  # type: (...) -> TargetFunctionType
+    def __get__(
+        self,
+        instance,  # type: owner
+        owner  # type: type
+    ):  # type: (...) -> typing.Callable
         """Get descriptor.
 
         :rtype: typing.Callable[..., typing.Any]
@@ -143,7 +146,7 @@ class SeparateClassMethod(object):
 
     def instance_method(
             self,
-            imeth  # type: TargetFunctionType
+            imeth  # type: typing.Optional[typing.Callable]
     ):  # type: (...) -> SeparateClassMethod
         """Descriptor to change instance method.
 
@@ -156,7 +159,7 @@ class SeparateClassMethod(object):
 
     def class_method(
             self,
-            cmeth  # type: TargetFunctionType
+            cmeth  # type: typing.Optional[typing.Callable]
     ):  # type: (...) -> SeparateClassMethod
         """Descriptor to change class method.
 
@@ -168,7 +171,7 @@ class SeparateClassMethod(object):
         return self
 
     @property
-    def imeth(self):  # type: (SeparateClassMethod) -> TargetFunctionType
+    def imeth(self):  # type: () -> typing.Optional[typing.Callable]
         """Instance method instance.
 
         :rtype: typing.Optional[typing.Callable[..., typing.Any]]
@@ -176,7 +179,7 @@ class SeparateClassMethod(object):
         return self.__instance_method
 
     @property
-    def cmeth(self):  # type: (SeparateClassMethod) -> TargetFunctionType
+    def cmeth(self):  # type: () -> typing.Optional[typing.Callable]
         """Class method instance.
 
         :rtype: typing.Optional[typing.Callable[..., typing.Any]]
