@@ -238,7 +238,7 @@ setup_args = dict(
     keywords=keywords,
     install_requires=required,
     extras_require={
-        ':python_version >= "2.7"': [
+        ':python_version < "3.7"': [
             'typing>=3.6',
         ],
     },

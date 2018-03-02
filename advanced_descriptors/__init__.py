@@ -21,7 +21,7 @@ __all__ = (
     'AdvancedProperty',
 )
 
-__version__ = '0.5.3'
+__version__ = '0.5.4'
 __author__ = "Alexey Stepanov"
 __author_email__ = 'penguinolog@gmail.com'
 __url__ = 'https://github.com/penguinolog/advanced-descriptors'
