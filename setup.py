@@ -55,8 +55,12 @@ def _extension(modpath):
 requires_optimization = [
     _extension('advanced_descriptors.separate_class_method'),
     _extension('advanced_descriptors.advanced_property'),
-    _extension('advanced_descriptors.__init__'),
 ]
+
+if 'win32' != sys.platform:
+    requires_optimization.append(
+        _extension('advanced_descriptors.__init__')
+    )
 
 ext_modules = cythonize(
     requires_optimization,
