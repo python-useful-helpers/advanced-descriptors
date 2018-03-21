@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""Python BinField implementation"""
+"""Advanded descriptors for special cases."""
 
 from __future__ import print_function
 
@@ -96,7 +96,7 @@ class AllowFailRepair(build_ext.build_ext):
                 shutil.copyfile(src, dst)
         except (
             distutils.errors.DistutilsPlatformError,
-            FileNotFoundError
+            getattr(globals()['__builtins__'], 'FileNotFoundError', OSError)
         ):
             raise BuildFailed()
 
