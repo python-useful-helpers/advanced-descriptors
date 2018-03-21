@@ -159,7 +159,7 @@ class AdvancedProperty(object):
         :type fcget:
             typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
 
-        .. note: doc argument is not supported due to class wide getter usage.
+        .. note:: doc argument is not supported due to class wide getter usage.
         """
         self.__fget = fget
         self.__fset = fset
@@ -210,7 +210,7 @@ class AdvancedProperty(object):
         return self.__fdel(instance)
 
     @property
-    def fget(self):  # type: (AdvancedProperty) -> GetterType
+    def fget(self):  # type: () -> GetterType
         """Getter instance.
 
         :rtype: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
@@ -218,7 +218,7 @@ class AdvancedProperty(object):
         return self.__fget
 
     @property
-    def fset(self):  # type: (AdvancedProperty) -> SetterType
+    def fset(self):  # type: () -> SetterType
         """Setter instance.
 
         :rtype:
@@ -227,7 +227,7 @@ class AdvancedProperty(object):
         return self.__fset
 
     @property
-    def fdel(self):  # type: (AdvancedProperty) -> DeleterType
+    def fdel(self):  # type: () -> DeleterType
         """Deleter instance.
 
         :rtype: typing.Optional[typing.Callable[[typing.Any, ], None]]
@@ -235,7 +235,7 @@ class AdvancedProperty(object):
         return self.__fdel
 
     @property
-    def fcget(self):  # type: (AdvancedProperty) -> GetterType
+    def fcget(self):  # type: () -> GetterType
         """Class wide getter instance.
 
         :rtype: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
@@ -251,7 +251,7 @@ class AdvancedProperty(object):
         :param fget: new normal getter.
         :type fget:
             typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
-        :rtype: GetterType
+        :rtype: AdvancedProperty
         """
         self.__fget = fget
         return self
@@ -265,7 +265,7 @@ class AdvancedProperty(object):
         :param fset: new setter.
         :type fset:
             typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]
-        :rtype: GetterType
+        :rtype: AdvancedProperty
         """
         self.__fset = fset
         return self
@@ -278,7 +278,7 @@ class AdvancedProperty(object):
 
         :param fdel: New deleter.
         :type fdel: typing.Optional[typing.Callable[[typing.Any, ], None]]
-        :rtype: GetterType
+        :rtype: AdvancedProperty
         """
         self.__fdel = fdel
         return self
@@ -292,7 +292,7 @@ class AdvancedProperty(object):
         :param fcget: new class-wide getter.
         :type fcget:
             typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
-        :rtype: GetterType
+        :rtype: AdvancedProperty
         """
         self.__fcget = fcget
         return self

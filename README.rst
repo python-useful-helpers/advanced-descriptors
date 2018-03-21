@@ -7,6 +7,9 @@ Advanced descriptors
     :target: https://ci.appveyor.com/project/penguinolog/advanced-descriptors
 .. image:: https://coveralls.io/repos/github/penguinolog/advanced-descriptors/badge.svg?branch=master
     :target: https://coveralls.io/github/penguinolog/advanced-descriptors?branch=master
+.. image:: https://readthedocs.org/projects/advanced-descriptors/badge/?version=latest
+    :target: http://advanced-descriptors.readthedocs.io/
+    :alt: Documentation Status
 .. image:: https://img.shields.io/pypi/v/advanced-descriptors.svg
     :target: https://pypi.python.org/pypi/advanced-descriptors
 .. image:: https://img.shields.io/pypi/pyversions/advanced-descriptors.svg

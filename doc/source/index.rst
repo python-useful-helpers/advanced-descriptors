@@ -10,6 +10,9 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
+    separate_classmethod
+    advanced_property
+
 Indices and tables
 ==================
 
