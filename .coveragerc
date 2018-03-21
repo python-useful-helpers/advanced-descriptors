@@ -1,0 +1,5 @@
+[run]
+source =
+    advanced_descriptors
+omit =
+    test/*
