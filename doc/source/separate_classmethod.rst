@@ -7,14 +7,16 @@ API: SeparateClassMethod
 .. py:currentmodule:: advanced_descriptors
 
 
-.. py:class:: SeparateClassMethod(imeth=None, cmeth=None, )
+.. py:class:: SeparateClassMethod(object)
 
     Separate class method and instance methods.
 
-    :param imeth: Instance method
-    :type imeth: ``typing.Optional[typing.Callable[..., typing.Any]]``
-    :param cmeth: Class method
-    :type cmeth: ``typing.Optional[typing.Callable[..., typing.Any]]``
+    .. py:method:: __init__(imeth=None, cmeth=None, )
+
+        :param imeth: Instance method
+        :type imeth: ``typing.Optional[typing.Callable[..., typing.Any]]``
+        :param cmeth: Class method
+        :type cmeth: ``typing.Optional[typing.Callable[..., typing.Any]]``
 
     .. py:method:: instance_method(imeth)
 

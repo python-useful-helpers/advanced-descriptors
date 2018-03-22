@@ -7,18 +7,20 @@ API: AdvancedProperty
 .. py:currentmodule:: advanced_descriptors
 
 
-.. py:class:: AdvancedProperty(fget=None, fset=None, fdel=None, fcget=None, )
+.. py:class:: AdvancedProperty(object)
 
     Advanced property main entry point.
 
-    :param fget: normal getter.
-    :type fget: ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
-    :param fset: normal setter.
-    :type fset: ``typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]``
-    :param fdel: normal deleter.
-    :type fdel: ``typing.Optional[typing.Callable[[typing.Any, ], None]]``
-    :param fcget: class getter. Used as normal, if normal is None.
-    :type fcget: ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+    .. py:method:: __init__(fget=None, fset=None, fdel=None, fcget=None, )
+
+        :param fget: normal getter.
+        :type fget: ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+        :param fset: normal setter.
+        :type fset: ``typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]``
+        :param fdel: normal deleter.
+        :type fdel: ``typing.Optional[typing.Callable[[typing.Any, ], None]]``
+        :param fcget: class getter. Used as normal, if normal is None.
+        :type fcget: ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
 
     .. note:: doc argument is not supported due to class wide getter usage.
 
