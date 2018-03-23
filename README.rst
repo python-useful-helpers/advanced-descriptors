@@ -1,12 +1,10 @@
 Advanced descriptors
 ====================
 
-.. image:: https://travis-ci.org/penguinolog/advanced-descriptors.svg?branch=master
-    :target: https://travis-ci.org/penguinolog/advanced-descriptors
-.. image:: https://img.shields.io/appveyor/ci/penguinolog/advanced-descriptors.svg
-    :target: https://ci.appveyor.com/project/penguinolog/advanced-descriptors
-.. image:: https://coveralls.io/repos/github/penguinolog/advanced-descriptors/badge.svg?branch=master
-    :target: https://coveralls.io/github/penguinolog/advanced-descriptors?branch=master
+.. image:: https://travis-ci.org/python-useful-helpers/advanced-descriptors.svg?branch=master
+    :target: https://travis-ci.org/python-useful-helpers/advanced-descriptors
+.. image:: https://coveralls.io/repos/github/python-useful-helpers/advanced-descriptors/badge.svg?branch=master
+    :target: https://coveralls.io/github/python-useful-helpers/advanced-descriptors?branch=master
 .. image:: https://readthedocs.org/projects/advanced-descriptors/badge/?version=latest
     :target: http://advanced-descriptors.readthedocs.io/
     :alt: Documentation Status
@@ -16,8 +14,8 @@ Advanced descriptors
     :target: https://pypi.python.org/pypi/advanced-descriptors
 .. image:: https://img.shields.io/pypi/status/advanced-descriptors.svg
     :target: https://pypi.python.org/pypi/advanced-descriptors
-.. image:: https://img.shields.io/github/license/penguinolog/advanced-descriptors.svg
-    :target: https://raw.githubusercontent.com/penguinolog/advanced-descriptors/master/LICENSE
+.. image:: https://img.shields.io/github/license/python-useful-helpers/advanced-descriptors.svg
+    :target: https://raw.githubusercontent.com/python-useful-helpers/advanced-descriptors/master/LICENSE
 
 This package includes helpers for special cases:
 
@@ -145,12 +143,10 @@ CI systems
 ==========
 For code checking several CI systems is used in parallel:
 
-1. `Travis CI: <https://travis-ci.org/penguinolog/advanced-descriptors>`_ is used for checking: PEP8, pylint, bandit, installation possibility and unit tests. Also it's publishes coverage on coveralls.
+1. `Travis CI: <https://travis-ci.org/python-useful-helpers/advanced-descriptors>`_ is used for checking: PEP8, pylint, bandit, installation possibility and unit tests. Also it's publishes coverage on coveralls.
 
-2. `AppVeyor: <https://ci.appveyor.com/project/penguinolog/advanced-descriptors>`_ is used for checking windows compatibility.
-
-3. `coveralls: <https://coveralls.io/github/penguinolog/advanced-descriptors>`_ is used for coverage display.
+2. `coveralls: <https://coveralls.io/github/python-useful-helpers/advanced-descriptors>`_ is used for coverage display.
 
 CD system
 =========
-`Travis CI: <https://travis-ci.org/penguinolog/advanced-descriptors>`_ is used for package delivery on PyPI.
+`Travis CI: <https://travis-ci.org/python-useful-helpers/advanced-descriptors>`_ is used for package delivery on PyPI.
