@@ -24,8 +24,11 @@ __all__ = (
 __version__ = '0.6.0'
 __author__ = "Alexey Stepanov"
 __author_email__ = 'penguinolog@gmail.com'
+__maintainers__ = {
+    'Alexey Stepanov': 'penguinolog@gmail.com',
+    'Antonio Esposito': 'esposito.cloud@gmail.com',
+    'Dennis Dmitriev': 'dis-xcom@gmail.com',
+}
 __url__ = 'https://github.com/python-useful-helpers/advanced-descriptors'
-__description__ = (
-    "Advanded descriptors for special cases."
-)
+__description__ = "Advanded descriptors for special cases."
 __license__ = "Apache License, Version 2.0"

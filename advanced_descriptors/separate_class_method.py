@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#    Copyright 2017 Alexey Stepanov aka penguinolog
+#    Copyright 2017-2018 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -103,9 +103,9 @@ class SeparateClassMethod(object):
 
     def __init__(
             self,
-            imeth=None,  # type: typing.Optional[typing.Callable]
-            cmeth=None,  # type: typing.Optional[typing.Callable]
-    ):
+            imeth=None,  # type: typing.Optional[typing.Callable[..., typing.Any]]
+            cmeth=None,  # type: typing.Optional[typing.Callable[..., typing.Any]]
+    ):  # type: (...) -> None
         """Separate class method and instance methods.
 
         :param imeth: Instance method
@@ -118,9 +118,9 @@ class SeparateClassMethod(object):
 
     def __get__(
         self,
-        instance,  # type: owner
-        owner  # type: type
-    ):  # type: (...) -> typing.Callable
+        instance,  # type: typing.Optional[object]
+        owner  # type: typing.Type[object]
+    ):  # type: (...) -> typing.Callable[..., typing.Any]
         """Get descriptor.
 
         :rtype: typing.Callable[..., typing.Any]
@@ -146,7 +146,7 @@ class SeparateClassMethod(object):
 
     def instance_method(
             self,
-            imeth  # type: typing.Optional[typing.Callable]
+            imeth  # type: typing.Optional[typing.Callable[..., typing.Any]]
     ):  # type: (...) -> SeparateClassMethod
         """Descriptor to change instance method.
 
@@ -159,7 +159,7 @@ class SeparateClassMethod(object):
 
     def class_method(
             self,
-            cmeth  # type: typing.Optional[typing.Callable]
+            cmeth  # type: typing.Optional[typing.Callable[..., typing.Any]]
     ):  # type: (...) -> SeparateClassMethod
         """Descriptor to change class method.
 
@@ -171,7 +171,7 @@ class SeparateClassMethod(object):
         return self
 
     @property
-    def imeth(self):  # type: () -> typing.Optional[typing.Callable]
+    def imeth(self):  # type: () -> typing.Optional[typing.Callable[..., typing.Any]]
         """Instance method instance.
 
         :rtype: typing.Optional[typing.Callable[..., typing.Any]]
@@ -179,7 +179,7 @@ class SeparateClassMethod(object):
         return self.__instance_method
 
     @property
-    def cmeth(self):  # type: () -> typing.Optional[typing.Callable]
+    def cmeth(self):  # type: () -> typing.Optional[typing.Callable[..., typing.Any]]
         """Class method instance.
 
         :rtype: typing.Optional[typing.Callable[..., typing.Any]]
