@@ -125,19 +125,7 @@ Usage examples:
 Testing
 =======
 The main test mechanism for the package `advanced-descriptors` is using `tox`.
-Test environments available:
-
-::
-
-  pep8
-  py27
-  py34
-  py35
-  py36
-  pypy
-  pypy3
-  pylint
-  pep257
+Available environments can be collected via `tox -l`
 
 CI systems
 ==========
