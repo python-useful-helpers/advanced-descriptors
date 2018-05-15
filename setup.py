@@ -19,6 +19,7 @@ import ast
 import collections
 from distutils.command import build_ext
 import distutils.errors
+import glob
 import os.path
 import shutil
 import sys
@@ -249,6 +250,12 @@ setup_args = dict(
     extras_require={
         ':python_version < "3.7"': [
             'typing>=3.6',
+        ],
+    },
+    package_data={
+        'advanced_descriptors': [
+            os.path.basename(filename)
+            for filename in glob.glob(os.path.join('advanced_descriptors', '*.pyi'))
         ],
     },
 )
