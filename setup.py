@@ -256,6 +256,8 @@ setup_args = dict(
         'advanced_descriptors': [
             os.path.basename(filename)
             for filename in glob.glob(os.path.join('advanced_descriptors', '*.pyi'))
+        ] + [
+            'py.typed'
         ],
     },
 )
