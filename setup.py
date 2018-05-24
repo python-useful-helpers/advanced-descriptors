@@ -247,11 +247,6 @@ setup_args = dict(
     classifiers=classifiers,
     keywords=keywords,
     install_requires=required,
-    extras_require={
-        ':python_version < "3.7"': [
-            'typing>=3.6',
-        ],
-    },
     package_data={
         'advanced_descriptors': [
             os.path.basename(filename)
