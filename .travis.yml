@@ -6,7 +6,7 @@ python:
 - 3.4
 - 3.5
 - &mainstream_python 3.6
-- pypy
+- &pypy pypy
 - pypy3.5
 - 3.7-dev
 install:
@@ -43,7 +43,7 @@ jobs:
   - stage: deploy
     # This prevents job from appearing in test plan unless commit is tagged:
     if: tag IS present
-    python: *mainstream_python
+    python: *pypy
     services:
     - docker
     install:
@@ -62,7 +62,7 @@ jobs:
         secure: "mG8p4UUzpz9wBdbif68NunjLp3rSED/OJw2Rh1nLBSSNcKtRBVEW4Gm/KYfHHc+kXVB66Nkda+T214kx4WhDk7lVRDKVu7ej0ze2mJX9iYmxhjOt7dcldostPAT8ZFfIvxEpS3UYGCPRbWTdOeeTe3wqz7/boVjC4DZu82nTarBJzApEn5ivtVHMs9bCedmk9Potb3FOiOscjkmEiKSllVQhgHnE/WPBOkfsaSaTCQKeTnqcCqJehNo4ki0cbmtAMpdPoR4DxAlHFK9jFD/W5Pm8s3UMkCer7vTwImINYICuibAIKEKcHdSHXOWJ6FoT21mJdgTWoZQGlAAKw8KV9R8dM6bNazV9iJbM3qUTUEJzyb08miRUf6iKxoPR1MpfqxuZ+ExGHfb0gX/Nu75aNxCSTbQ1YJD/oeXaqRQwpeGmW8vAXB9JSThfiEafymWMOKYuvgg0GPIP2RlLw7+zacfw9915VFiLpKSPrD48YU3p9jamIUeYb2aEDHpQK3rH4JUeAjdWV+a0mi0xWLjFzrVFc3R3jyUPAoxLNHLxzmb8+55pevA1JPUEYY2dolGBnZ7eXBAOIkHgEFlqqRxp4TLXoQR98eESYwrvaSV2YA11IuAJHF4bBI1pUfuUO7KiIDhacVi8VfNu5lAw8M1tInZk4aYLK6sw8L7XKq5hfZs="
       on:
         tags: true
-        distributions: sdist
+        distributions: sdist bdist_wheel
       skip_upload_docs: true
 
 cache: pip
