@@ -71,7 +71,7 @@ ext_modules = cythonize(
         embedsignature=True,
         overflowcheck=True,
     )
-) if cythonize is not None else ()
+) if cythonize is not None and PY3 else []
 
 
 class BuildFailed(Exception):
