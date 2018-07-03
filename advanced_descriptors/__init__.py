@@ -21,7 +21,7 @@ __all__ = (
     'AdvancedProperty',
 )
 
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 __author__ = "Alexey Stepanov"
 __author_email__ = 'penguinolog@gmail.com'
 __maintainers__ = {
