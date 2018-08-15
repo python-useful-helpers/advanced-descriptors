@@ -27,7 +27,7 @@ jobs:
     - *upgrade_python_toolset
     - pip install tox
     script:
-    - tox -e pylint,bandit, mypy
+    - tox -e pylint,bandit,mypy
     after_success: skip
 
   - stage: Code style check
