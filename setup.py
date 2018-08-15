@@ -70,6 +70,7 @@ ext_modules = cythonize(
         binding=True,
         embedsignature=True,
         overflowcheck=True,
+        language_level=3,
     )
 ) if cythonize is not None and PY3 else []
 
