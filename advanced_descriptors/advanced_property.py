@@ -15,10 +15,7 @@
 
 """Property with class-wide getter."""
 
-try:  # pragma: no cover
-    import typing  # noqa  # pylint: disable=unused-import
-except ImportError:  # pragma: no cover
-    typing = None
+import typing  # noqa: F401  # pylint: disable=unused-import
 
 __all__ = (
     'AdvancedProperty',
@@ -153,8 +150,8 @@ class AdvancedProperty(object):
 
     def __get__(
         self,
-        instance,  # type: typing.Optional[object]
-        owner  # type: typing.Type[object]
+        instance,  # type: typing.Optional[typing.Any]
+        owner  # type: typing.Any
     ):  # type: (...) -> typing.Any
         """Get descriptor.
 

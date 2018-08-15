@@ -15,13 +15,9 @@
 
 """Separate class and instance methods with the same name."""
 
-import six
+import typing  # noqa: F401  # pylint: disable=unused-import
 
-try:  # pragma: no cover
-    import typing  # pylint: disable=unused-import
-except ImportError:  # pragma: no cover
-    # noinspection PyRedeclaration
-    typing = None
+import six
 
 __all__ = (
     'SeparateClassMethod',
@@ -118,8 +114,8 @@ class SeparateClassMethod(object):
 
     def __get__(
         self,
-        instance,  # type: typing.Optional[object]
-        owner  # type: typing.Type[object]
+        instance,  # type: typing.Optional[typing.Any]
+        owner  # type: typing.Any
     ):  # type: (...) -> typing.Callable[..., typing.Any]
         """Get descriptor.
 
@@ -131,16 +127,16 @@ class SeparateClassMethod(object):
                 raise AttributeError()
 
             @six.wraps(self.__class_method)
-            def class_method(*args, **kwargs):
+            def class_method(*args, **kwargs):  # type: (typing.Tuple, typing.Dict) -> typing.Any
                 """Bound class method."""
-                return self.__class_method(owner, *args, **kwargs)
+                return self.__class_method(owner, *args, **kwargs)  # type: ignore
 
             return class_method
 
         @six.wraps(self.__instance_method)
-        def instance_method(*args, **kwargs):
+        def instance_method(*args, **kwargs):  # type: (typing.Tuple, typing.Dict) -> typing.Any
             """Bound instance method."""
-            return self.__instance_method(instance, *args, **kwargs)
+            return self.__instance_method(instance, *args, **kwargs)  # type: ignore
 
         return instance_method
 
