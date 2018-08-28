@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""Advanded descriptors for special cases."""
+"""Advanced descriptors for special cases."""
 
 from .separate_class_method import SeparateClassMethod
 from .advanced_property import AdvancedProperty
@@ -30,5 +30,5 @@ __maintainers__ = {
     'Dennis Dmitriev': 'dis-xcom@gmail.com',
 }
 __url__ = 'https://github.com/python-useful-helpers/advanced-descriptors'
-__description__ = "Advanded descriptors for special cases."
+__description__ = "Advanced descriptors for special cases."
 __license__ = "Apache License, Version 2.0"

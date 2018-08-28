@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""Advanded descriptors for special cases."""
+"""Advanced descriptors for special cases."""
 
 from __future__ import print_function
 
@@ -19,7 +19,6 @@ import ast
 import collections
 from distutils.command import build_ext
 import distutils.errors
-import glob
 import os.path
 import shutil
 import sys
@@ -259,12 +258,7 @@ setup_args = dict(
                    "!=36.2.0",
     install_requires=required,
     package_data={
-        'advanced_descriptors': [
-            os.path.basename(filename)
-            for filename in glob.glob(os.path.join('advanced_descriptors', '*.pyi'))
-        ] + [
-            'py.typed'
-        ],
+        'advanced_descriptors': ['py.typed'],
     },
 )
 if cythonize is not None:
