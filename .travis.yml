@@ -65,7 +65,7 @@ jobs:
     install:
     - *upgrade_python_toolset
     - *install_deps
-    - pip install --upgrade "pylint >= 2.0"
+    - pip install --upgrade "pylint < 2.0"
     script:
     - pylint advanced_descriptors
     after_success: skip
