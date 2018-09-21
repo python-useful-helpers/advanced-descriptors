@@ -141,7 +141,7 @@ jobs:
     install:
     - *upgrade_python_toolset
     script:
-    - ./tools/run_docker.sh "advanced_descriptors"
+    - ./tools/run_docker.sh "Advanced_Descriptors"
     before_deploy:
     - pip install -r build_requirements.txt
     - *build_package
