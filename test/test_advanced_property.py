@@ -28,7 +28,7 @@ class TestAdvancedProperty(unittest.TestCase):
         del instance.val
         self.assertEqual(instance.val, 0)
         with self.assertRaises(AttributeError):
-            getattr(Target, 'val')
+            getattr(Target, "val")
 
     def test_02_full(self):
         class Target(object):
@@ -80,10 +80,10 @@ class TestAdvancedProperty(unittest.TestCase):
             prop = advanced_descriptors.AdvancedProperty()
 
         with self.assertRaises(AttributeError):
-            getattr(Target, 'prop')
+            getattr(Target, "prop")
 
         with self.assertRaises(AttributeError):
-            getattr(Target(), 'prop')
+            getattr(Target(), "prop")
 
         with self.assertRaises(AttributeError):
             Target().prop = 1
@@ -110,12 +110,7 @@ class TestAdvancedProperty(unittest.TestCase):
             def __init__(self):
                 self._value = 42
 
-            val = advanced_descriptors.AdvancedProperty(
-                fget=getter,
-                fset=setter,
-                fdel=deleter,
-                fcget=cgetter
-            )
+            val = advanced_descriptors.AdvancedProperty(fget=getter, fset=setter, fdel=deleter, fcget=cgetter)
 
         instance = Target()
         self.assertEqual(instance.val, 42)
@@ -126,7 +121,7 @@ class TestAdvancedProperty(unittest.TestCase):
         self.assertEqual(instance.val, 0)
         self.assertEqual(Target.val, 777)
 
-        prop = Target.__dict__['val']
+        prop = Target.__dict__["val"]
         self.assertIs(prop.fget, getter)
         self.assertIs(prop.fset, setter)
         self.assertIs(prop.fdel, deleter)

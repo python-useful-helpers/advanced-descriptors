@@ -16,19 +16,16 @@
 from .separate_class_method import SeparateClassMethod
 from .advanced_property import AdvancedProperty
 
-__all__ = (
-    'SeparateClassMethod',
-    'AdvancedProperty',
-)
+__all__ = ("SeparateClassMethod", "AdvancedProperty")
 
-__version__ = '1.0.5'
+__version__ = "1.0.5"
 __author__ = "Alexey Stepanov"
-__author_email__ = 'penguinolog@gmail.com'
+__author_email__ = "penguinolog@gmail.com"
 __maintainers__ = {
-    'Alexey Stepanov': 'penguinolog@gmail.com',
-    'Antonio Esposito': 'esposito.cloud@gmail.com',
-    'Dennis Dmitriev': 'dis-xcom@gmail.com',
+    "Alexey Stepanov": "penguinolog@gmail.com",
+    "Antonio Esposito": "esposito.cloud@gmail.com",
+    "Dennis Dmitriev": "dis-xcom@gmail.com",
 }
-__url__ = 'https://github.com/python-useful-helpers/advanced-descriptors'
+__url__ = "https://github.com/python-useful-helpers/advanced-descriptors"
 __description__ = "Advanced descriptors for special cases."
 __license__ = "Apache License, Version 2.0"
