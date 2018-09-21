@@ -38,6 +38,7 @@ _helpers:
 - &install_built pip install advanced_descriptors --no-index -f dist
 - &test_no_cov  py.test -vv test
 - &test_cythonized
+  stage: Test cythonized
   install:
   - *upgrade_python_toolset
   - *install_test_deps
