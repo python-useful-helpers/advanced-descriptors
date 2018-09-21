@@ -76,13 +76,12 @@ class TestSeparateClassMethod(unittest.TestCase):
 
             def __init__(tself):
                 tself.value = 2
-            getval = advanced_descriptors.SeparateClassMethod(
-                imeth, cmeth
-            )
+
+            getval = advanced_descriptors.SeparateClassMethod(imeth, cmeth)
 
         instance = Target()
         self.assertEqual(instance.getval(), 2)
         self.assertEqual(Target.getval(), 1)
-        descr = Target.__dict__['getval']
+        descr = Target.__dict__["getval"]
         self.assertIs(descr.imeth, imeth)
         self.assertIs(descr.cmeth, cmeth)
