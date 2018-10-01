@@ -15,14 +15,13 @@
 
 """Separate class and instance methods with the same name."""
 
-import typing  # noqa: F401  # pylint: disable=unused-import
-
-import six
+import functools
+import typing
 
 __all__ = ("SeparateClassMethod",)
 
 
-class SeparateClassMethod(object):
+class SeparateClassMethod:
     """Separate class method and instance methods with the same name.
 
     Usage examples:
@@ -93,8 +92,8 @@ class SeparateClassMethod(object):
     __slots__ = ("__instance_method", "__class_method")
 
     def __init__(
-        self, imeth=None, cmeth=None
-    ):  # type: (typing.Optional[typing.Callable], typing.Optional[typing.Callable]) -> None
+        self, imeth: typing.Optional[typing.Callable] = None, cmeth: typing.Optional[typing.Callable] = None
+    ) -> None:
         """Separate class method and instance methods.
 
         :param imeth: Instance method
@@ -105,52 +104,55 @@ class SeparateClassMethod(object):
         self.__instance_method = imeth
         self.__class_method = cmeth
 
-    def __get__(self, instance, owner):  # type: (typing.Optional[typing.Any], typing.Any) -> typing.Callable
+    def __get__(self, instance: typing.Optional[typing.Any], owner: typing.Any) -> typing.Callable:
         """Get descriptor.
 
+        :return: class method or instance method depends on call behavior
         :rtype: typing.Callable
-        :raises: AttributeError
+        :raises AttributeError: Not implemented getter for class method and called class context.
         """
         if instance is None or self.__instance_method is None:
             if self.__class_method is None:
                 raise AttributeError()
 
-            @six.wraps(self.__class_method)
-            def class_method(*args, **kwargs):  # type: (typing.Tuple, typing.Dict) -> typing.Any
+            @functools.wraps(self.__class_method)
+            def class_method(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
                 """Bound class method."""
                 return self.__class_method(owner, *args, **kwargs)  # type: ignore
 
             return class_method
 
-        @six.wraps(self.__instance_method)
-        def instance_method(*args, **kwargs):  # type: (typing.Any, typing.Any) -> typing.Any
+        @functools.wraps(self.__instance_method)
+        def instance_method(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
             """Bound instance method."""
             return self.__instance_method(instance, *args, **kwargs)  # type: ignore
 
         return instance_method
 
-    def instance_method(self, imeth):  # type: (typing.Optional[typing.Callable]) -> SeparateClassMethod
+    def instance_method(self, imeth: typing.Optional[typing.Callable]) -> "SeparateClassMethod":
         """Descriptor to change instance method.
 
         :param imeth: New instance method.
         :type imeth: typing.Optional[typing.Callable]
+        :return: SeparateClassMethod
         :rtype: SeparateClassMethod
         """
         self.__instance_method = imeth
         return self
 
-    def class_method(self, cmeth):  # type: (typing.Optional[typing.Callable]) -> SeparateClassMethod
+    def class_method(self, cmeth: typing.Optional[typing.Callable]) -> "SeparateClassMethod":
         """Descriptor to change class method.
 
-        :type cmeth: New class method.
+        :param cmeth: New class method.
         :type cmeth: typing.Optional[typing.Callable]
+        :return: SeparateClassMethod
         :rtype: SeparateClassMethod
         """
         self.__class_method = cmeth
         return self
 
     @property
-    def imeth(self):  # type: () -> typing.Optional[typing.Callable]
+    def imeth(self) -> typing.Optional[typing.Callable]:
         """Instance method instance.
 
         :rtype: typing.Optional[typing.Callable]
@@ -158,7 +160,7 @@ class SeparateClassMethod(object):
         return self.__instance_method
 
     @property
-    def cmeth(self):  # type: () -> typing.Optional[typing.Callable]
+    def cmeth(self) -> typing.Optional[typing.Callable]:
         """Class method instance.
 
         :rtype: typing.Optional[typing.Callable]

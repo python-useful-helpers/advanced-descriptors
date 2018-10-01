@@ -8,9 +8,6 @@ install:
 - pip install --upgrade pytest-cov coveralls
 
 _python:
-- &python27
-  name: "Python 2.7"
-  python: 2.7
 - &python34
   name: "Python 3.4"
   python: 3.4
@@ -25,9 +22,6 @@ _python:
   python: 3.7
   dist: xenial
   sudo: true
-- &pypy
-  name: "PyPy"
-  python: pypy
 - &pypy3
   name: "PyPy3"
   python: pypy3.5
@@ -68,30 +62,13 @@ after_success:
 - coveralls
 
 jobs:
-  fast_finish: true
   include:
-  - stage: test
-    <<: *python27
-  - stage: test
-    <<: *python34
-  - stage: test
-    <<: *python35
-  - stage: test
-    <<: *python36
-  - stage: test
-    <<: *python37
-  - stage: test
-    <<: *pypy
-  - stage: test
-    <<: *pypy3
-
   - <<: *static_analysis
-    <<: *python36
     name: "PyLint"
     install:
     - *upgrade_python_toolset
     - *install_deps
-    - pip install --upgrade "pylint < 2.0"
+    - pip install --upgrade "pylint > 2.1"
     script:
     - pylint advanced_descriptors
   - <<: *static_analysis
@@ -110,15 +87,6 @@ jobs:
     script:
     - mypy --strict advanced_descriptors
 
-  - <<: *test_cythonized
-    <<: *python34
-  - <<: *test_cythonized
-    <<: *python35
-  - <<: *test_cythonized
-    <<: *python36
-  - <<: *test_cythonized
-    <<: *python37
-
   - <<: *code_style_check
     name: "PEP8"
     install:
@@ -133,6 +101,33 @@ jobs:
     - pip install --upgrade pydocstyle
     script:
     - pydocstyle advanced_descriptors
+  - <<: *code_style_check
+    name: "Black formatting"
+    install:
+    - *upgrade_python_toolset
+    - pip install --upgrade black
+    script:
+    - black --check advanced_descriptors
+
+  - stage: test
+    <<: *python34
+  - stage: test
+    <<: *python35
+  - stage: test
+    <<: *python36
+  - stage: test
+    <<: *python37
+  - stage: test
+    <<: *pypy3
+
+  - <<: *test_cythonized
+    <<: *python34
+  - <<: *test_cythonized
+    <<: *python35
+  - <<: *test_cythonized
+    <<: *python36
+  - <<: *test_cythonized
+    <<: *python37
 
   - stage: deploy
     # This prevents job from appearing in test plan unless commit is tagged:
