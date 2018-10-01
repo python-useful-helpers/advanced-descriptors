@@ -116,7 +116,7 @@ class SeparateClassMethod(object):
                 raise AttributeError()
 
             @six.wraps(self.__class_method)
-            def class_method(*args, **kwargs):  # type: (typing.Tuple, typing.Dict) -> typing.Any
+            def class_method(*args, **kwargs):  # type: (typing.Any, typing.Any) -> typing.Any
                 """Bound class method."""
                 return self.__class_method(owner, *args, **kwargs)  # type: ignore
 

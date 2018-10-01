@@ -17,20 +17,9 @@ from __future__ import print_function
 
 import ast
 import collections
-from distutils.command import build_ext
-import distutils.errors
 import os.path
-import shutil
-import sys
-
-try:
-    from Cython.Build import cythonize
-except ImportError:
-    cythonize = None
 
 import setuptools
-
-PY3 = sys.version_info[:2] > (2, 7)
 
 with open(os.path.join(os.path.dirname(__file__), "advanced_descriptors", "__init__.py")) as f:
     source = f.read()
@@ -42,74 +31,10 @@ with open("README.rst") as f:
     long_description = f.read()
 
 
-def _extension(modpath):
-    """Make setuptools.Extension."""
-    return setuptools.Extension(modpath, [modpath.replace(".", "/") + ".py"])
-
-
-requires_optimization = [
-    _extension("advanced_descriptors.separate_class_method"),
-    _extension("advanced_descriptors.advanced_property"),
-]
-
-if "win32" != sys.platform:
-    requires_optimization.append(_extension("advanced_descriptors.__init__"))
-
-ext_modules = (
-    cythonize(
-        requires_optimization,
-        compiler_directives=dict(
-            always_allow_keywords=True, binding=True, embedsignature=True, overflowcheck=True, language_level=3
-        ),
-    )
-    if cythonize is not None and PY3
-    else []
-)
-
-
 class BuildFailed(Exception):
     """For install clear scripts."""
 
     pass
-
-
-class AllowFailRepair(build_ext.build_ext):
-    """This class allows C extension building to fail and repairs init."""
-
-    def run(self):
-        """Run."""
-        try:
-            build_ext.build_ext.run(self)
-
-            # Copy __init__.py back to repair package.
-            build_dir = os.path.abspath(self.build_lib)
-            root_dir = os.path.abspath(os.path.join(__file__, ".."))
-            target_dir = build_dir if not self.inplace else root_dir
-
-            src_file = os.path.join("advanced_descriptors", "__init__.py")
-
-            src = os.path.join(root_dir, src_file)
-            dst = os.path.join(target_dir, src_file)
-
-            if src != dst:
-                shutil.copyfile(src, dst)
-        except (
-            distutils.errors.DistutilsPlatformError,
-            getattr(globals()["__builtins__"], "FileNotFoundError", OSError),
-        ):
-            raise BuildFailed()
-
-    def build_extension(self, ext):
-        """build_extension."""
-        try:
-            build_ext.build_ext.build_extension(self, ext)
-        except (
-            distutils.errors.CCompilerError,
-            distutils.errors.DistutilsExecError,
-            distutils.errors.DistutilsPlatformError,
-            ValueError,
-        ):
-            raise BuildFailed()
 
 
 # noinspection PyUnresolvedReferences
@@ -160,8 +85,6 @@ def get_simple_vars_from_src(src):
     OrderedDict([('e', 1), ('f', 1), ('g', 1)])
     """
     ast_data = (ast.Str, ast.Num, ast.List, ast.Set, ast.Dict, ast.Tuple)
-    if PY3:
-        ast_data += (ast.Bytes, ast.NameConstant)
 
     tree = ast.parse(src)
 
@@ -196,18 +119,13 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 2",
     "Programming Language :: Python :: 2.7",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.4",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
 keywords = ["descriptor", "property", "classmethod", "development"]
 
-setup_args = dict(
+setuptools.setup(
     name="Advanced-Descriptors",
     author=variables["__author__"],
     author_email=variables["__author_email__"],
@@ -221,7 +139,7 @@ setup_args = dict(
     long_description=long_description,
     classifiers=classifiers,
     keywords=keywords,
-    python_requires=">=2.7.5,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*",
+    python_requires=">=2.7.5,<3.0",
     # While setuptools cannot deal with pre-installed incompatible versions,
     # setting a lower bound is not harmful - it makes error messages cleaner. DO
     # NOT set an upper bound on setuptools, as that will lead to uninstallable
@@ -234,14 +152,3 @@ setup_args = dict(
     install_requires=required,
     package_data={"advanced_descriptors": ["py.typed"]},
 )
-if cythonize is not None:
-    setup_args["ext_modules"] = ext_modules
-    setup_args["cmdclass"] = dict(build_ext=AllowFailRepair)
-
-try:
-    setuptools.setup(**setup_args)
-except BuildFailed:
-    print("*" * 80 + "\n" "* Build Failed!\n" "* Use clear scripts version.\n" "*" * 80 + "\n")
-    del setup_args["ext_modules"]
-    del setup_args["cmdclass"]
-    setuptools.setup(**setup_args)

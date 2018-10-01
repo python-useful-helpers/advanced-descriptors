@@ -3,7 +3,7 @@ language: python
 os: linux
 install:
 - &upgrade_python_toolset pip install --upgrade pip setuptools wheel
-- &install_test_deps pip install --upgrade pytest pytest-sugar
+- pip install --upgrade pytest pytest-sugar
 - &install_deps pip install -r CI_REQUIREMENTS.txt
 - pip install --upgrade pytest-cov coveralls
 
@@ -11,53 +11,24 @@ _python:
 - &python27
   name: "Python 2.7"
   python: 2.7
-- &python34
-  name: "Python 3.4"
-  python: 3.4
-- &python35
-  name: "Python 3.5"
-  python: 3.5
 - &python36
   name: "Python 3.6"
   python: 3.6
-- &python37
-  name: "Python 3.7"
-  python: 3.7
-  dist: xenial
-  sudo: true
 - &pypy
   name: "PyPy"
   python: pypy
-- &pypy3
-  name: "PyPy3"
-  python: pypy3.5
 
 _helpers:
-- &install_cython pip install --upgrade Cython
 - &build_package python setup.py bdist_wheel
-- &install_built pip install advanced_descriptors --no-index -f dist
-- &test_no_cov  py.test -vv test
-- &test_cythonized
-  stage: Test cythonized
-  install:
-  - *upgrade_python_toolset
-  - *install_test_deps
-  - *install_deps
-  - *install_cython
-  script:
-  - *build_package
-  - *install_built
-  - *test_no_cov
-  after_success: skip
   
 - &static_analysis
   stage: Static analysis
-  <<: *python37
+  <<: *python36
   after_success: skip
 
 - &code_style_check
   stage: Code style check
-  <<: *python37
+  <<: *python36
   after_success: skip
 
 script:
@@ -73,20 +44,9 @@ jobs:
   - stage: test
     <<: *python27
   - stage: test
-    <<: *python34
-  - stage: test
-    <<: *python35
-  - stage: test
-    <<: *python36
-  - stage: test
-    <<: *python37
-  - stage: test
     <<: *pypy
-  - stage: test
-    <<: *pypy3
 
   - <<: *static_analysis
-    <<: *python36
     name: "PyLint"
     install:
     - *upgrade_python_toolset
@@ -106,18 +66,9 @@ jobs:
     install:
     - *upgrade_python_toolset
     - *install_deps
-    - pip install --upgrade "mypy >= 0.620"
+    - pip install --upgrade "mypy >= 0.630"
     script:
     - mypy --strict advanced_descriptors
-
-  - <<: *test_cythonized
-    <<: *python34
-  - <<: *test_cythonized
-    <<: *python35
-  - <<: *test_cythonized
-    <<: *python36
-  - <<: *test_cythonized
-    <<: *python37
 
   - <<: *code_style_check
     name: "PEP8"
@@ -137,18 +88,15 @@ jobs:
   - stage: deploy
     # This prevents job from appearing in test plan unless commit is tagged:
     if: tag IS present
-    # Run on pypy to build not cythonized wheel
-    <<: *pypy3
-    name: Build universal and cythonized bdist_wheel. Deploy bdist and sdist.
-    services:
-    - docker
+    <<: *pypy
+    name: Build universal bdist_wheel. Deploy bdist and sdist.
+    services: []
     install:
     - *upgrade_python_toolset
-    script:
-    - ./tools/run_docker.sh "Advanced_Descriptors"
-    before_deploy:
     - pip install -r build_requirements.txt
+    script:
     - *build_package
+    before_deploy: []
     deploy:
     - provider: pypi
       # `skip_cleanup: true` is required to preserve binary wheels, built
