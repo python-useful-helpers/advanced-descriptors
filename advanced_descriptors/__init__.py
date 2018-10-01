@@ -18,7 +18,7 @@ from .advanced_property import AdvancedProperty
 
 __all__ = ("SeparateClassMethod", "AdvancedProperty")
 
-__version__ = "1.0.6"
+__version__ = "2.0.0"
 __author__ = "Alexey Stepanov"
 __author_email__ = "penguinolog@gmail.com"
 __maintainers__ = {
