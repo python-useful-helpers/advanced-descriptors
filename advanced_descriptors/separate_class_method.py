@@ -108,8 +108,9 @@ class SeparateClassMethod(object):
     def __get__(self, instance, owner):  # type: (typing.Optional[typing.Any], typing.Any) -> typing.Callable
         """Get descriptor.
 
+        :return: class method or instance method depends on call behavior
         :rtype: typing.Callable
-        :raises: AttributeError
+        :raises AttributeError: Not implemented getter for class method and called class context.
         """
         if instance is None or self.__instance_method is None:
             if self.__class_method is None:
@@ -134,6 +135,7 @@ class SeparateClassMethod(object):
 
         :param imeth: New instance method.
         :type imeth: typing.Optional[typing.Callable]
+        :return: SeparateClassMethod
         :rtype: SeparateClassMethod
         """
         self.__instance_method = imeth
@@ -142,8 +144,9 @@ class SeparateClassMethod(object):
     def class_method(self, cmeth):  # type: (typing.Optional[typing.Callable]) -> SeparateClassMethod
         """Descriptor to change class method.
 
-        :type cmeth: New class method.
+        :param cmeth: New class method.
         :type cmeth: typing.Optional[typing.Callable]
+        :return: SeparateClassMethod
         :rtype: SeparateClassMethod
         """
         self.__class_method = cmeth
