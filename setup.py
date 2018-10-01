@@ -30,8 +30,6 @@ except ImportError:
 
 import setuptools
 
-PY3 = sys.version_info[:2] > (2, 7)
-
 with open(os.path.join(os.path.dirname(__file__), "advanced_descriptors", "__init__.py")) as f:
     source = f.read()
 
@@ -62,7 +60,7 @@ ext_modules = (
             always_allow_keywords=True, binding=True, embedsignature=True, overflowcheck=True, language_level=3
         ),
     )
-    if cythonize is not None and PY3
+    if cythonize is not None
     else []
 )
 
@@ -159,9 +157,7 @@ def get_simple_vars_from_src(src):
     >>> get_simple_vars_from_src(multiple_assign)
     OrderedDict([('e', 1), ('f', 1), ('g', 1)])
     """
-    ast_data = (ast.Str, ast.Num, ast.List, ast.Set, ast.Dict, ast.Tuple)
-    if PY3:
-        ast_data += (ast.Bytes, ast.NameConstant)
+    ast_data = (ast.Str, ast.Num, ast.List, ast.Set, ast.Dict, ast.Tuple, ast.Bytes, ast.NameConstant)
 
     tree = ast.parse(src)
 
@@ -194,8 +190,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 2",
-    "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.4",
     "Programming Language :: Python :: 3.5",
@@ -221,7 +215,7 @@ setup_args = dict(
     long_description=long_description,
     classifiers=classifiers,
     keywords=keywords,
-    python_requires=">=2.7.5,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*",
+    python_requires=">=3.4",
     # While setuptools cannot deal with pre-installed incompatible versions,
     # setting a lower bound is not harmful - it makes error messages cleaner. DO
     # NOT set an upper bound on setuptools, as that will lead to uninstallable
