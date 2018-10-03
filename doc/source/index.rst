@@ -12,6 +12,7 @@ Contents:
 
     separate_classmethod
     advanced_property
+    log_on_access
 
 Indices and tables
 ==================

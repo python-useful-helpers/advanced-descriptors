@@ -20,7 +20,7 @@ import typing
 __all__ = ("AdvancedProperty",)
 
 
-class AdvancedProperty:
+class AdvancedProperty(property):
     """Property with class-wide getter.
 
     This property allows implementation of read-only getter for classes
@@ -28,14 +28,13 @@ class AdvancedProperty:
     Implements almost full @property interface,
     except __doc__ due to class-wide nature.
 
-    .. note:
+    .. versionadded:: 2.1.0 Inherit property
 
-        If class-wide setter/deleter required:
-        use normal property in metaclass.
+    .. note:: If class-wide setter/deleter required: use normal property in metaclass.
 
     Usage examples:
 
-    >>> class LikeNormalProperty(object):
+    >>> class LikeNormalProperty:
     ...     def __init__(self):
     ...         self.val = 42
     ...     @AdvancedProperty
@@ -67,7 +66,7 @@ class AdvancedProperty:
     ...
     AttributeError
 
-    >>> class ExtendedProperty(object):
+    >>> class ExtendedProperty:
     ...     def __init__(self):
     ...         self.val = 21
     ...     @AdvancedProperty
@@ -100,7 +99,7 @@ class AdvancedProperty:
     >>> ExtendedProperty.prop
     'self.val'
 
-    >>> class ClassProperty(object):
+    >>> class ClassProperty:
     ...     def _getter(cls):
     ...         return cls
     ...     prop = AdvancedProperty(fcget=_getter)  # special case
@@ -112,8 +111,6 @@ class AdvancedProperty:
     >>> ClassProperty().prop is ClassProperty  # class wide property is used
     True
     """
-
-    __slots__ = ("__fget", "__fset", "__fdel", "__fcget")
 
     def __init__(
         self,
@@ -135,13 +132,11 @@ class AdvancedProperty:
 
         .. note:: doc argument is not supported due to class wide getter usage.
         """
-        self.__fget = fget
-        self.__fset = fset
-        self.__fdel = fdel
+        super(AdvancedProperty, self).__init__(fget=fget, fset=fset, fdel=fdel)
 
         self.__fcget = fcget
 
-    def __get__(self, instance: typing.Optional[typing.Any], owner: typing.Any) -> typing.Any:
+    def __get__(self, instance: typing.Any, owner: typing.Any = None) -> typing.Any:
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
@@ -151,61 +146,11 @@ class AdvancedProperty:
         :rtype: typing.Any
         :raises AttributeError: Getter is not available
         """
-        if instance is None or self.__fget is None:
+        if owner is not None and (instance is None or self.fget is None):
             if self.__fcget is None:
                 raise AttributeError()
             return self.__fcget(owner)
-        return self.__fget(instance)
-
-    def __set__(self, instance: typing.Any, value: typing.Any) -> None:
-        """Set descriptor.
-
-        :param instance: Owner class instance. Filled only if instance created, else None.
-        :type instance: typing.Optional
-        :param value: Value for setter
-        :raises AttributeError: Setter is not available
-        """
-        if self.__fset is None:
-            raise AttributeError()
-        self.__fset(instance, value)
-
-    def __delete__(self, instance: typing.Any) -> None:
-        """Delete descriptor.
-
-        :param instance: Owner class instance. Filled only if instance created, else None.
-        :type instance: typing.Optional
-        :raises AttributeError: Deleter is not available
-        """
-        if self.__fdel is None:
-            raise AttributeError()
-        self.__fdel(instance)
-
-    @property
-    def fget(self) -> typing.Optional[typing.Callable[[typing.Any], typing.Any]]:
-        """Getter instance.
-
-        :return: Normal getter instance
-        :rtype: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
-        """
-        return self.__fget
-
-    @property
-    def fset(self) -> typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]:
-        """Setter instance.
-
-        :return: Setter instance
-        :rtype: typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]
-        """
-        return self.__fset
-
-    @property
-    def fdel(self) -> typing.Optional[typing.Callable[[typing.Any], None]]:
-        """Deleter instance.
-
-        :return: Deletter instance
-        :rtype: typing.Optional[typing.Callable[[typing.Any, ], None]]
-        """
-        return self.__fdel
+        return super(AdvancedProperty, self).__get__(instance, owner)
 
     @property
     def fcget(self) -> typing.Optional[typing.Callable[[typing.Any], typing.Any]]:
@@ -215,39 +160,6 @@ class AdvancedProperty:
         :rtype: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
         """
         return self.__fcget
-
-    def getter(self, fget: typing.Optional[typing.Callable[[typing.Any], typing.Any]]) -> "AdvancedProperty":
-        """Descriptor to change the getter on a property.
-
-        :param fget: new normal getter.
-        :type fget: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
-        :return: AdvancedProperty
-        :rtype: AdvancedProperty
-        """
-        self.__fget = fget
-        return self
-
-    def setter(self, fset: typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]) -> "AdvancedProperty":
-        """Descriptor to change the setter on a property.
-
-        :param fset: new setter.
-        :type fset: typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]
-        :return: AdvancedProperty
-        :rtype: AdvancedProperty
-        """
-        self.__fset = fset
-        return self
-
-    def deleter(self, fdel: typing.Optional[typing.Callable[[typing.Any], None]]) -> "AdvancedProperty":
-        """Descriptor to change the deleter on a property.
-
-        :param fdel: New deleter.
-        :type fdel: typing.Optional[typing.Callable[[typing.Any, ], None]]
-        :return: AdvancedProperty
-        :rtype: AdvancedProperty
-        """
-        self.__fdel = fdel
-        return self
 
     def cgetter(self, fcget: typing.Optional[typing.Callable[[typing.Any], typing.Any]]) -> "AdvancedProperty":
         """Descriptor to change the class wide getter on a property.
