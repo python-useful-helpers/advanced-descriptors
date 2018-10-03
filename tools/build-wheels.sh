@@ -28,6 +28,8 @@ for PYTHON in ${PYTHON_VERSIONS}; do
     /opt/python/${PYTHON}/bin/pip wheel /io/ -w /io/dist/
     cd /io
     /opt/python/${PYTHON}/bin/python setup.py bdist_wheel
+    /opt/python/${PYTHON}/bin/python setup.py clean
+    rm -rf /io/build
 done
 
 echo
@@ -54,11 +56,10 @@ for PYTHON in ${PYTHON_VERSIONS}; do
     /opt/python/${PYTHON}/bin/pip install "$package_name" --no-index -f file:///io/dist
     /opt/python/${PYTHON}/bin/pip install pytest
     /opt/python/${PYTHON}/bin/py.test -vv /io/test
+    rm -rf /io/.pytest_cache
 done
 
 find /io/dist/ -type f -not -name "*$package_name*" -delete
-rm -rf /io/build
 rm -rf /io/*.egg-info
-rm -rf /io/.pytest_cache
 chmod -v a+rwx /io/dist
 chmod -v a+rw /io/dist/*

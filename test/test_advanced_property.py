@@ -5,7 +5,7 @@ import advanced_descriptors
 
 class TestAdvancedProperty(unittest.TestCase):
     def test_01_normal_property(self):
-        class Target(object):
+        class Target:
             def __init__(tself):
                 tself._value = 42
 
@@ -31,7 +31,7 @@ class TestAdvancedProperty(unittest.TestCase):
             getattr(Target, "val")
 
     def test_02_full(self):
-        class Target(object):
+        class Target:
             _value = 777
 
             def __init__(tself):
@@ -65,7 +65,7 @@ class TestAdvancedProperty(unittest.TestCase):
         self.assertEqual(Target.val, 777)
 
     def test_03_class_wide_only(self):
-        class Target(object):
+        class Target:
             getcls = advanced_descriptors.AdvancedProperty()
 
             @getcls.cgetter
@@ -76,7 +76,7 @@ class TestAdvancedProperty(unittest.TestCase):
         self.assertIs(Target, Target().getcls)
 
     def test_04_no_methods(self):
-        class Target(object):
+        class Target:
             prop = advanced_descriptors.AdvancedProperty()
 
         with self.assertRaises(AttributeError):
@@ -104,7 +104,7 @@ class TestAdvancedProperty(unittest.TestCase):
         def cgetter(cls):
             return cls._value
 
-        class Target(object):
+        class Target:
             _value = 777
 
             def __init__(self):

@@ -7,7 +7,7 @@ API: SeparateClassMethod
 .. py:currentmodule:: advanced_descriptors
 
 
-.. py:class:: SeparateClassMethod(object)
+.. py:class:: SeparateClassMethod
 
     Separate class method and instance methods.
 

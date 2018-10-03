@@ -15,10 +15,11 @@
 
 from .separate_class_method import SeparateClassMethod
 from .advanced_property import AdvancedProperty
+from .log_on_access import LogOnAccess
 
-__all__ = ("SeparateClassMethod", "AdvancedProperty")
+__all__ = ("SeparateClassMethod", "AdvancedProperty", "LogOnAccess")
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 __author__ = "Alexey Stepanov"
 __author_email__ = "penguinolog@gmail.com"
 __maintainers__ = {

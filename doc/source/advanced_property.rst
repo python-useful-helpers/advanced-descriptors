@@ -7,9 +7,11 @@ API: AdvancedProperty
 .. py:currentmodule:: advanced_descriptors
 
 
-.. py:class:: AdvancedProperty(object)
+.. py:class:: AdvancedProperty(property)
 
     Advanced property main entry point.
+
+    .. versionadded:: 2.1.0 Inherit property
 
     .. py:method:: __init__(fget=None, fset=None, fdel=None, fcget=None, )
 

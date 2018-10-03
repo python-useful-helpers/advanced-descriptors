@@ -26,7 +26,7 @@ class SeparateClassMethod:
 
     Usage examples:
 
-    >>> class WithNormalMethod(object):  # no wrapper should be used
+    >>> class WithNormalMethod:  # no wrapper should be used
     ...     def __init__(self):
     ...         self.val=42
     ...     @SeparateClassMethod
@@ -46,7 +46,7 @@ class SeparateClassMethod:
     ...
     AttributeError
 
-    >>> class WithSeparateMethod(object):
+    >>> class WithSeparateMethod:
     ...     val = 33
     ...     def __init__(self):
     ...         self.val=42
@@ -77,7 +77,7 @@ class SeparateClassMethod:
     >>> WithSeparateMethod.val
     44
 
-    >>> class WithClassMethod(object):  # @classmethod should be used
+    >>> class WithClassMethod:  # @classmethod should be used
     ...     def _func(cls):
     ...         return cls
     ...     meth = SeparateClassMethod(cmeth=_func)
