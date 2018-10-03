@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import io
 import logging
 import unittest
@@ -257,3 +259,81 @@ class TestLogOnAccess(unittest.TestCase):
 
         getattr(target, "prop_name")
         self.assertEqual(self.stream.getvalue(), "DEBUG:prop_name:Target().prop_name -> 'prop_name'\n")
+
+    def test_09_logger_implemented(self):
+        class Target:
+            def __init__(self, val="ok"):
+                self.val = val
+                self.logger = logging.getLogger(self.__class__.__name__)
+
+            def __repr__(self):
+                return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+
+            @advanced_descriptors.LogOnAccess
+            def ok(self):
+                return self.val
+
+            @ok.setter
+            def ok(self, val):
+                self.val = val
+
+            @ok.deleter
+            def ok(self):
+                self.val = ""
+
+        target = Target()
+        self.assertEqual(target.ok, "ok")
+        self.assertEqual(self.stream.getvalue(), "DEBUG:Target:Target(val=ok).ok -> 'ok'\n")
+
+        self.stream.seek(0)
+        self.stream.truncate()
+
+        target.ok = "OK"
+        self.assertEqual(self.stream.getvalue(), "DEBUG:Target:Target(val=ok).ok = 'OK'\n")
+
+        self.assertEqual(target.ok, "OK")
+
+        self.stream.seek(0)
+        self.stream.truncate()
+
+        del target.ok
+        self.assertEqual(self.stream.getvalue(), "DEBUG:Target:del Target(val=OK).ok\n")
+
+    def test_10_log_implemented(self):
+        class Target:
+            def __init__(self, val="ok"):
+                self.val = val
+                self.log = logging.getLogger(self.__class__.__name__)
+
+            def __repr__(self):
+                return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+
+            @advanced_descriptors.LogOnAccess
+            def ok(self):
+                return self.val
+
+            @ok.setter
+            def ok(self, val):
+                self.val = val
+
+            @ok.deleter
+            def ok(self):
+                self.val = ""
+
+        target = Target()
+        self.assertEqual(target.ok, "ok")
+        self.assertEqual(self.stream.getvalue(), "DEBUG:Target:Target(val=ok).ok -> 'ok'\n")
+
+        self.stream.seek(0)
+        self.stream.truncate()
+
+        target.ok = "OK"
+        self.assertEqual(self.stream.getvalue(), "DEBUG:Target:Target(val=ok).ok = 'OK'\n")
+
+        self.assertEqual(target.ok, "OK")
+
+        self.stream.seek(0)
+        self.stream.truncate()
+
+        del target.ok
+        self.assertEqual(self.stream.getvalue(), "DEBUG:Target:del Target(val=OK).ok\n")

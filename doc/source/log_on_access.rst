@@ -12,8 +12,9 @@ API: LogOnAccess
     Property with logging on successful get/set/delete or failure.
 
     .. versionadded:: 2.1.0
+    .. versionchanged:: 2.2.0 Re-use logger from instance, if possible.
 
-    .. py:method:: __init__(fget=None, fset=None, fdel=None, doc=None, *, logger=logging.getLogger('log_on_access'), log_object_repr=True, log_level=logging.DEBUG, exc_level=logging.DEBUG, log_success=True, log_failure=True, log_traceback=True, override_name=None)
+    .. py:method:: __init__(fget=None, fset=None, fdel=None, doc=None, *, logger=None, log_object_repr=True, log_level=logging.DEBUG, exc_level=logging.DEBUG, log_success=True, log_failure=True, log_traceback=True, override_name=None)
 
         :param fget: normal getter.
         :type fget: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
@@ -23,8 +24,8 @@ API: LogOnAccess
         :type fdel: typing.Optional[typing.Callable[[typing.Any, ], None]]
         :param doc: docstring override
         :type doc: typing.Optional[str]
-        :param logger: logger instance or name to use
-        :type logger: typing.Union[logging.Logger, str]
+        :param logger: logger instance or name to use as override
+        :type logger: typing.Optional[typing.Union[logging.Logger, str]]
         :param log_object_repr: use `repr` over object to describe owner if True else owner class name and id
         :type log_object_repr: bool
         :param log_level: log level for successful operations
@@ -81,8 +82,8 @@ API: LogOnAccess
 
     .. py:attribute:: logger
 
-        ``logging.Logger``
-        Logger instance.
+        ``typing.Optional[logging.Logger]``
+        Logger instance to use as override.
 
     .. py:attribute:: log_object_repr
 

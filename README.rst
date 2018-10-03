@@ -133,7 +133,36 @@ This special case of property is useful in cases, where a lot of properties shou
 
 Basic API is conform with `property`, but in addition it is possible to customize logger, log levels and log conditions.
 
-Usage example:
+Usage examples:
+
+1. Simple usage. All by default, logger is re-used from instance if available with names `logger` or `log` else used internal `advanced_descriptors.log_on_access` logger:
+
+  .. code-block:: python
+
+  import logging
+
+  class Target(object):
+
+      def init(self, val='ok')
+          self.val = val
+          self.logger = logging.get_logger(self.__class__.__name__)  # Single for class, follow subclassing
+
+      def __repr__(self):
+          return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+
+      @advanced_descriptors.LogOnAccess
+      def ok(self):
+          return self.val
+
+      @ok.setter
+      def ok(self, val):
+          self.val = val
+
+      @ok.deleter
+      def ok(self):
+          self.val = ""
+
+2. Use with global logger for class:
 
   .. code-block:: python
 

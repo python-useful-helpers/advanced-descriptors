@@ -29,6 +29,7 @@ class LogOnAccess(property):
     """Property with logging on successful get/set/delete or failure.
 
     .. versionadded:: 2.1.0
+    .. versionchanged:: 2.2.0 Re-use logger from instance, if possible.
     """
 
     def __init__(
@@ -39,7 +40,7 @@ class LogOnAccess(property):
         doc: typing.Optional[str] = None,
         *,
         # Extended settings start
-        logger: typing.Union[logging.Logger, str] = _logger,
+        logger: typing.Optional[typing.Union[logging.Logger, str]] = None,
         log_object_repr: bool = True,
         log_level: int = logging.DEBUG,
         exc_level: int = logging.DEBUG,
@@ -58,8 +59,8 @@ class LogOnAccess(property):
         :type fdel: typing.Optional[typing.Callable[[typing.Any, ], None]]
         :param doc: docstring override
         :type doc: typing.Optional[str]
-        :param logger: logger instance or name to use
-        :type logger: typing.Union[logging.Logger, str]
+        :param logger: logger instance or name to use as override
+        :type logger: typing.Optional[typing.Union[logging.Logger, str]]
         :param log_object_repr: use `repr` over object to describe owner if True else owner class name and id
         :type log_object_repr: bool
         :param log_level: log level for successful operations
@@ -163,7 +164,7 @@ class LogOnAccess(property):
         """
         super(LogOnAccess, self).__init__(fget=fget, fset=fset, fdel=fdel, doc=doc)
 
-        if isinstance(logger, logging.Logger):
+        if logger is None or isinstance(logger, logging.Logger):
             self.__logger = logger
         else:
             self.__logger = logging.getLogger(logger)
@@ -193,10 +194,26 @@ class LogOnAccess(property):
     def __get_obj_source(self, instance: typing.Any, owner: typing.Optional[type] = None) -> str:
         """Get object repr block."""
         if self.log_object_repr:
-            return repr(instance)
+            return "{instance!r}".format(instance=instance)
         return "<{name}() at 0x{id:X}>".format(
             name=owner.__name__ if owner is not None else instance.__class__.__name__, id=id(instance)
         )
+
+    def _get_logger_for_instance(self, instance: typing.Any) -> logging.Logger:
+        """Get logger for log calls.
+
+        :param instance: Owner class instance. Filled only if instance created, else None.
+        :type instance: typing.Optional[owner]
+        :return: logger instance
+        :rtype: logging.Logger
+        """
+        if self.logger is not None:  # pylint: disable=no-else-return
+            return self.logger
+        elif hasattr(instance, "logger") and isinstance(instance.logger, logging.Logger):
+            return instance.logger
+        elif hasattr(instance, "log") and isinstance(instance.log, logging.Logger):
+            return instance.log
+        return _logger
 
     def __get__(self, instance: typing.Any, owner: typing.Optional[type] = None) -> typing.Any:
         """Get descriptor.
@@ -213,18 +230,19 @@ class LogOnAccess(property):
             raise AttributeError()
 
         source = self.__get_obj_source(instance, owner)
+        logger = self._get_logger_for_instance(instance)
 
         try:
             result = super(LogOnAccess, self).__get__(instance, owner)
             if self.log_success:
-                self.logger.log(
+                logger.log(
                     self.log_level,
                     "{source}.{name} -> {result!r}".format(source=source, name=self.__name__, result=result),
                 )
             return result
         except Exception:
             if self.log_failure:
-                self.logger.log(
+                logger.log(
                     self.exc_level,
                     "Failed: {source}.{name}{traceback}".format(
                         source=source, name=self.__name__, traceback=self.__traceback
@@ -246,16 +264,17 @@ class LogOnAccess(property):
             raise AttributeError()
 
         source = self.__get_obj_source(instance)
+        logger = self._get_logger_for_instance(instance)
 
         try:
             super(LogOnAccess, self).__set__(instance, value)
             if self.log_success:
-                self.logger.log(
+                logger.log(
                     self.log_level, "{source}.{name} = {value!r}".format(source=source, name=self.__name__, value=value)
                 )
         except Exception:
             if self.log_failure:
-                self.logger.log(
+                logger.log(
                     self.exc_level,
                     "Failed: {source}.{name} = {value!r}{traceback}".format(
                         source=source, name=self.__name__, value=value, traceback=self.__traceback
@@ -276,14 +295,15 @@ class LogOnAccess(property):
             raise AttributeError()
 
         source = self.__get_obj_source(instance)
+        logger = self._get_logger_for_instance(instance)
 
         try:
             super(LogOnAccess, self).__delete__(instance)
             if self.log_success:
-                self.logger.log(self.log_level, "del {source}.{name}".format(source=source, name=self.__name__))
+                logger.log(self.log_level, "del {source}.{name}".format(source=source, name=self.__name__))
         except Exception:
             if self.log_failure:
-                self.logger.log(
+                logger.log(
                     self.exc_level,
                     "{source}: Failed: del {name}{traceback}".format(
                         source=source, name=self.__name__, traceback=self.__traceback
@@ -293,14 +313,14 @@ class LogOnAccess(property):
             raise
 
     @property
-    def logger(self) -> logging.Logger:
-        """Logger instance."""
+    def logger(self) -> typing.Optional[logging.Logger]:
+        """Logger instance to use as override."""
         return self.__logger
 
     @logger.setter
-    def logger(self, logger: typing.Union[logging.Logger, str]) -> None:
-        """Logger instance."""
-        if isinstance(logger, logging.Logger):
+    def logger(self, logger: typing.Union[logging.Logger, str, None]) -> None:
+        """Logger instance to use as override."""
+        if logger is None or isinstance(logger, logging.Logger):
             self.__logger = logger
         else:
             self.__logger = logging.getLogger(logger)

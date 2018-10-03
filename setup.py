@@ -48,6 +48,7 @@ def _extension(modpath):
 requires_optimization = [
     _extension("advanced_descriptors.separate_class_method"),
     _extension("advanced_descriptors.advanced_property"),
+    _extension("advanced_descriptors.log_on_access"),
 ]
 
 if "win32" != sys.platform:
@@ -75,7 +76,10 @@ class AllowFailRepair(build_ext.build_ext):
     """This class allows C extension building to fail and repairs init."""
 
     def run(self):
-        """Run."""
+        """Run.
+
+        :raises BuildFailed: extension build failed and need to skip cython part.
+        """
         try:
             build_ext.build_ext.run(self)
 
@@ -93,12 +97,15 @@ class AllowFailRepair(build_ext.build_ext):
                 shutil.copyfile(src, dst)
         except (
             distutils.errors.DistutilsPlatformError,
-            getattr(globals()["__builtins__"], "FileNotFoundError", OSError),
+            FileNotFoundError,
         ):
             raise BuildFailed()
 
     def build_extension(self, ext):
-        """build_extension."""
+        """build_extension.
+
+        :raises BuildFailed: extension build failed and need to skip cython part.
+        """
         try:
             build_ext.build_ext.build_extension(self, ext)
         except (
