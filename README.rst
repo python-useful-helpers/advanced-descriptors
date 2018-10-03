@@ -25,6 +25,8 @@ This package includes helpers for special cases:
 
 * `AdvancedProperty` - property with possibility to set class wide getter.
 
+* `LogOnAccess` - property with logging on successful get/set/delete or failure.
+
 SeparateClassMethod
 -------------------
 
@@ -123,6 +125,46 @@ Usage examples:
 .. note::
 
   class-wide getter receives class as argument. IDE's don't know about custom descriptors and substitutes `self` by default.
+
+LogOnAccess
+-----------
+
+This special case of property is useful in cases, where a lot of properties should be logged by similar way without writing a lot of code.
+
+Basic API is conform with `property`, but in addition it is possible to customize logger, log levels and log conditions.
+
+Usage example:
+
+  .. code-block:: python
+
+    class Target(object):
+
+      def init(self, val='ok')
+          self.val = val
+
+      def __repr__(self):
+          return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+
+      @advanced_descriptors.LogOnAccess
+      def ok(self):
+          return self.val
+
+      @ok.setter
+      def ok(self, val):
+          self.val = val
+
+      @ok.deleter
+      def ok(self):
+          self.val = ""
+
+      ok.logger = 'test_logger'
+      ok.log_level = logging.INFO
+      ok.exc_level = logging.ERROR
+      ok.log_object_repr = True  # As by default
+      ok.log_success = True  # As by default
+      ok.log_failure = True  # As by default
+      ok.log_traceback = True  # As by default
+      ok.override_name = None  # As by default: use original name
 
 Testing
 =======
