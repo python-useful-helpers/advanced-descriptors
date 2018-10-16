@@ -139,28 +139,28 @@ Usage examples:
 
   .. code-block:: python
 
-  import logging
+    import logging
 
-  class Target(object):
+    class Target(object):
 
-      def init(self, val='ok')
-          self.val = val
-          self.logger = logging.get_logger(self.__class__.__name__)  # Single for class, follow subclassing
+        def init(self, val='ok')
+            self.val = val
+            self.logger = logging.get_logger(self.__class__.__name__)  # Single for class, follow subclassing
 
-      def __repr__(self):
-          return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+        def __repr__(self):
+            return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
 
-      @advanced_descriptors.LogOnAccess
-      def ok(self):
-          return self.val
+        @advanced_descriptors.LogOnAccess
+        def ok(self):
+            return self.val
 
-      @ok.setter
-      def ok(self, val):
-          self.val = val
+        @ok.setter
+        def ok(self, val):
+            self.val = val
 
-      @ok.deleter
-      def ok(self):
-          self.val = ""
+        @ok.deleter
+        def ok(self):
+            self.val = ""
 
 2. Use with global logger for class:
 
