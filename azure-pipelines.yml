@@ -76,28 +76,28 @@ jobs:
         python.version: '3.4'
       Python34_x86:
         python.version: '3.4'
-        architecture: 'x86'
+        python.architecture: 'x86'
       Python35_x64:
         python.version: '3.5'
       Python35_x86:
         python.version: '3.5'
-        architecture: 'x86'
+        python.architecture: 'x86'
       Python36_x64:
         python.version: '3.6'
       Python36_x86:
         python.version: '3.6'
-        architecture: 'x86'
+        python.architecture: 'x86'
       Python37_x64:
         python.version: '3.7'
       Python37_x86:
         python.version: '3.7'
-        architecture: 'x86'
+        python.architecture: 'x86'
 
   steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
-      architecture: 'x64'
+      architecture: '$(python.architecture)'
 
   - script: |
       python -m pip install --upgrade pip
