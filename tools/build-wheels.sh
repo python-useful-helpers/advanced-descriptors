@@ -60,6 +60,9 @@ for PYTHON in ${PYTHON_VERSIONS}; do
 done
 
 find /io/dist/ -type f -not -name "*$package_name*" -delete
+rm -rf /io/.eggs
+rm -rf /io/build
 rm -rf /io/*.egg-info
+rm -rf /io/.pytest_cache
 chmod -v a+rwx /io/dist
 chmod -v a+rw /io/dist/*
