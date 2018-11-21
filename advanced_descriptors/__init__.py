@@ -13,13 +13,25 @@
 
 """Advanced descriptors for special cases."""
 
+import pkg_resources
+
 from .separate_class_method import SeparateClassMethod
 from .advanced_property import AdvancedProperty
 from .log_on_access import LogOnAccess
 
 __all__ = ("SeparateClassMethod", "AdvancedProperty", "LogOnAccess")
 
-__version__ = "2.2.1"
+try:
+    __version__ = pkg_resources.get_distribution(__name__).version
+except pkg_resources.DistributionNotFound:
+    # package is not installed, try to get from SCM
+    try:
+        import setuptools_scm  # type: ignore
+
+        __version__ = setuptools_scm.get_version()
+    except ImportError:
+        pass
+
 __author__ = "Alexey Stepanov"
 __author_email__ = "penguinolog@gmail.com"
 __maintainers__ = {
