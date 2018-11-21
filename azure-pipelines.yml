@@ -22,5 +22,5 @@ jobs:
 
   - script: |
       pip install -U pylint
-      pylint -f msvs logwrap
+      pylint -f msvs advanced_descriptors
     displayName: 'PyLint'
