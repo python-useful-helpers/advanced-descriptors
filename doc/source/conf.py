@@ -15,7 +15,7 @@
 
 import pkg_resources
 
-release = pkg_resources.get_distribution("logwrap").version
+release = pkg_resources.get_distribution("Advanced-Descriptors").version
 version = '.'.join(release.split('.')[:2])
 
 # If extensions (or modules to document with autodoc) are in another directory,
