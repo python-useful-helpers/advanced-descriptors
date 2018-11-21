@@ -38,7 +38,7 @@ jobs:
   - script: |
       pip install -U wheel
       python setup.py bdist_wheel
-      pip install --pre --no-index -f dist logwrap
+      pip install --pre --no-index -f dist advanced-descriptors
     displayName: Build and install
 
   - script: |
