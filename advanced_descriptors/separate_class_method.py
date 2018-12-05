@@ -89,7 +89,7 @@ class SeparateClassMethod:
     True
     """
 
-    __slots__ = ("__instance_method", "__class_method")
+    __slots__ = ("__instance_method", "__class_method", "__owner", "__name")
 
     def __init__(
         self, imeth: typing.Optional[typing.Callable] = None, cmeth: typing.Optional[typing.Callable] = None
@@ -103,6 +103,13 @@ class SeparateClassMethod:
         """
         self.__instance_method = imeth
         self.__class_method = cmeth
+        self.__owner = None
+        self.__name = ""
+
+    def __set_name__(self, owner: typing.Any, name: str) -> None:
+        """Set __name__ and __objclass__ property."""
+        self.__owner = owner
+        self.__name = name
 
     def __get__(self, instance: typing.Optional[typing.Any], owner: typing.Any) -> typing.Callable:
         """Get descriptor.
@@ -128,6 +135,16 @@ class SeparateClassMethod:
             return self.__instance_method(instance, *args, **kwargs)  # type: ignore
 
         return instance_method
+
+    @property
+    def __objclass__(self) -> typing.Any:  # pragma: no cover
+        """Read-only owner."""
+        return self.__owner
+
+    @property
+    def __name__(self) -> str:  # pragma: no cover
+        """Read-only name."""
+        return self.__name
 
     def instance_method(self, imeth: typing.Optional[typing.Callable]) -> "SeparateClassMethod":
         """Descriptor to change instance method.
