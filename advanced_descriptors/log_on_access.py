@@ -15,14 +15,15 @@
 
 """Property with logging on successful get/set/delete or failure."""
 
+__all__ = ("LogOnAccess",)
+
 import logging
 import sys
 import traceback
 import typing
 
-__all__ = ("LogOnAccess",)
 
-_logger = logging.getLogger(__name__)  # type: logging.Logger
+_logger: logging.Logger = logging.getLogger(__name__)
 
 
 class LogOnAccess(property):
@@ -47,7 +48,7 @@ class LogOnAccess(property):
         log_success: bool = True,
         log_failure: bool = True,
         log_traceback: bool = True,
-        override_name: typing.Optional[str] = None
+        override_name: typing.Optional[str] = None,
     ) -> None:
         """Advanced property main entry point.
 
@@ -88,7 +89,7 @@ class LogOnAccess(property):
         ...     def __init__(self, val = 'ok'):
         ...         self.val = val
         ...     def __repr__(self):
-        ...         return '{cls}(val={self.val})'.format(cls=self.__class__.__name__, self=self)
+        ...         return f'{self.__class__.__name__}(val={self.val})'
         ...     @LogOnAccess
         ...     def ok(self):
         ...         return self.val
@@ -165,17 +166,17 @@ class LogOnAccess(property):
         super(LogOnAccess, self).__init__(fget=fget, fset=fset, fdel=fdel, doc=doc)
 
         if logger is None or isinstance(logger, logging.Logger):
-            self.__logger = logger
+            self.__logger: typing.Optional[logging.Logger] = logger
         else:
             self.__logger = logging.getLogger(logger)
 
-        self.__log_object_repr = log_object_repr
-        self.__log_level = log_level
-        self.__exc_level = exc_level
-        self.__log_success = log_success
-        self.__log_failure = log_failure
-        self.__log_traceback = log_traceback
-        self.__override_name = override_name
+        self.__log_object_repr: bool = log_object_repr
+        self.__log_level: int = log_level
+        self.__exc_level: int = exc_level
+        self.__log_success: bool = log_success
+        self.__log_failure: bool = log_failure
+        self.__log_traceback: bool = log_traceback
+        self.__override_name: typing.Optional[str] = override_name
 
     @property
     def __traceback(self) -> str:
@@ -186,7 +187,7 @@ class LogOnAccess(property):
         stack = traceback.extract_stack()
         tb = traceback.extract_tb(exc_info[2])
         full_tb = stack[:1] + tb  # cut decorator and build full traceback
-        exc_line = traceback.format_exception_only(*exc_info[:2])
+        exc_line: typing.List[str] = traceback.format_exception_only(*exc_info[:2])
         # Make standard traceback string
         tb_text = "\nTraceback (most recent call last):\n" + "".join(traceback.format_list(full_tb)) + "".join(exc_line)
         return tb_text
@@ -194,10 +195,8 @@ class LogOnAccess(property):
     def __get_obj_source(self, instance: typing.Any, owner: typing.Optional[type] = None) -> str:
         """Get object repr block."""
         if self.log_object_repr:
-            return "{instance!r}".format(instance=instance)
-        return "<{name}() at 0x{id:X}>".format(
-            name=owner.__name__ if owner is not None else instance.__class__.__name__, id=id(instance)
-        )
+            return f"{instance!r}"
+        return f"<{owner.__name__ if owner is not None else instance.__class__.__name__}() at 0x{id(instance):X}>"
 
     def _get_logger_for_instance(self, instance: typing.Any) -> logging.Logger:
         """Get logger for log calls.
@@ -229,26 +228,17 @@ class LogOnAccess(property):
         if instance is None or self.fget is None:
             raise AttributeError()
 
-        source = self.__get_obj_source(instance, owner)
-        logger = self._get_logger_for_instance(instance)
+        source: str = self.__get_obj_source(instance, owner)
+        logger: logging.Logger = self._get_logger_for_instance(instance)
 
         try:
             result = super(LogOnAccess, self).__get__(instance, owner)
             if self.log_success:
-                logger.log(
-                    self.log_level,
-                    "{source}.{name} -> {result!r}".format(source=source, name=self.__name__, result=result),
-                )
+                logger.log(self.log_level, "%s.%s -> %r", source, self.__name__, result)
             return result
         except Exception:
             if self.log_failure:
-                logger.log(
-                    self.exc_level,
-                    "Failed: {source}.{name}{traceback}".format(
-                        source=source, name=self.__name__, traceback=self.__traceback
-                    ),
-                    exc_info=False,
-                )
+                logger.log(self.exc_level, "Failed: %s.%s%s", source, self.__name__, self.__traceback, exc_info=False)
             raise
 
     def __set__(self, instance: typing.Any, value: typing.Any) -> None:
@@ -263,22 +253,22 @@ class LogOnAccess(property):
         if self.fset is None:
             raise AttributeError()
 
-        source = self.__get_obj_source(instance)
-        logger = self._get_logger_for_instance(instance)
+        source: str = self.__get_obj_source(instance)
+        logger: logging.Logger = self._get_logger_for_instance(instance)
 
         try:
             super(LogOnAccess, self).__set__(instance, value)
             if self.log_success:
-                logger.log(
-                    self.log_level, "{source}.{name} = {value!r}".format(source=source, name=self.__name__, value=value)
-                )
+                logger.log(self.log_level, "%s.%s = %r", source, self.__name__, value)
         except Exception:
             if self.log_failure:
                 logger.log(
                     self.exc_level,
-                    "Failed: {source}.{name} = {value!r}{traceback}".format(
-                        source=source, name=self.__name__, value=value, traceback=self.__traceback
-                    ),
+                    "Failed: %s.%s = %r%s",
+                    source,
+                    self.__name__,
+                    value,
+                    self.__traceback,
                     exc_info=False,
                 )
             raise
@@ -294,21 +284,17 @@ class LogOnAccess(property):
         if self.fdel is None:
             raise AttributeError()
 
-        source = self.__get_obj_source(instance)
-        logger = self._get_logger_for_instance(instance)
+        source: str = self.__get_obj_source(instance)
+        logger: logging.Logger = self._get_logger_for_instance(instance)
 
         try:
             super(LogOnAccess, self).__delete__(instance)
             if self.log_success:
-                logger.log(self.log_level, "del {source}.{name}".format(source=source, name=self.__name__))
+                logger.log(self.log_level, "del %s.%s", source, self.__name__)
         except Exception:
             if self.log_failure:
                 logger.log(
-                    self.exc_level,
-                    "{source}: Failed: del {name}{traceback}".format(
-                        source=source, name=self.__name__, traceback=self.__traceback
-                    ),
-                    exc_info=False,
+                    self.exc_level, "%s: Failed: del %s%s", source, self.__name__, self.__traceback, exc_info=False
                 )
             raise
 
