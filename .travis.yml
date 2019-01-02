@@ -83,7 +83,7 @@ jobs:
     install:
     - *upgrade_python_toolset
     - *install_deps
-    - pip install --upgrade "mypy >= 0.620"
+    - pip install --upgrade "mypy >= 0.630"
     script:
     - mypy --strict advanced_descriptors
 
