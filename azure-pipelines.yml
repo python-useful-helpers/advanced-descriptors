@@ -24,7 +24,7 @@ jobs:
       pip install -U pylint
       pylint -f msvs advanced_descriptors
     displayName: 'PyLint'
-    
+
 - job: 'MyPy'
   pool:
     vmIMage: 'VS2017-Win2016'

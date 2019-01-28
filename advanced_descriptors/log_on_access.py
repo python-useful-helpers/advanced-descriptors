@@ -15,12 +15,13 @@
 
 """Property with logging on successful get/set/delete or failure."""
 
+__all__ = ("LogOnAccess",)
+
 import logging
 import sys
 import traceback
 import typing
 
-__all__ = ("LogOnAccess",)
 
 _logger = logging.getLogger(__name__)  # type: logging.Logger
 
@@ -165,7 +166,7 @@ class LogOnAccess(property):
         super(LogOnAccess, self).__init__(fget=fget, fset=fset, fdel=fdel, doc=doc)
 
         if logger is None or isinstance(logger, logging.Logger):
-            self.__logger = logger
+            self.__logger = logger  # type: typing.Optional[logging.Logger]
         else:
             self.__logger = logging.getLogger(logger)
 
@@ -175,7 +176,7 @@ class LogOnAccess(property):
         self.__log_success = log_success
         self.__log_failure = log_failure
         self.__log_traceback = log_traceback
-        self.__override_name = override_name
+        self.__override_name = override_name  # type: typing.Optional[str]
 
     @property
     def __traceback(self) -> str:
@@ -186,7 +187,7 @@ class LogOnAccess(property):
         stack = traceback.extract_stack()
         tb = traceback.extract_tb(exc_info[2])
         full_tb = stack[:1] + tb  # cut decorator and build full traceback
-        exc_line = traceback.format_exception_only(*exc_info[:2])
+        exc_line = traceback.format_exception_only(*exc_info[:2])  # type: typing.List[str]
         # Make standard traceback string
         tb_text = "\nTraceback (most recent call last):\n" + "".join(traceback.format_list(full_tb)) + "".join(exc_line)
         return tb_text
@@ -230,7 +231,7 @@ class LogOnAccess(property):
             raise AttributeError()
 
         source = self.__get_obj_source(instance, owner)
-        logger = self._get_logger_for_instance(instance)
+        logger = self._get_logger_for_instance(instance)  # type: logging.Logger
 
         try:
             result = super(LogOnAccess, self).__get__(instance, owner)
@@ -264,7 +265,7 @@ class LogOnAccess(property):
             raise AttributeError()
 
         source = self.__get_obj_source(instance)
-        logger = self._get_logger_for_instance(instance)
+        logger = self._get_logger_for_instance(instance)  # type: logging.Logger
 
         try:
             super(LogOnAccess, self).__set__(instance, value)
@@ -295,7 +296,7 @@ class LogOnAccess(property):
             raise AttributeError()
 
         source = self.__get_obj_source(instance)
-        logger = self._get_logger_for_instance(instance)
+        logger = self._get_logger_for_instance(instance)  # type: logging.Logger
 
         try:
             super(LogOnAccess, self).__delete__(instance)

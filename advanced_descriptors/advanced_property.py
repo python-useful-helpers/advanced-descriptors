@@ -15,9 +15,9 @@
 
 """Property with class-wide getter."""
 
-import typing
-
 __all__ = ("AdvancedProperty",)
+
+import typing
 
 
 class AdvancedProperty(property):
@@ -134,7 +134,7 @@ class AdvancedProperty(property):
         """
         super(AdvancedProperty, self).__init__(fget=fget, fset=fset, fdel=fdel)
 
-        self.__fcget = fcget
+        self.__fcget = fcget  # type: typing.Optional[typing.Callable[[typing.Any], typing.Any]]
 
     def __get__(self, instance: typing.Any, owner: typing.Any = None) -> typing.Any:
         """Get descriptor.

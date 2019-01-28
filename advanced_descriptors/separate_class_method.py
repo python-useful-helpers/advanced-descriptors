@@ -103,9 +103,9 @@ class SeparateClassMethod:
         :param cmeth: Class method
         :type cmeth: typing.Optional[typing.Callable]
         """
-        self.__instance_method = imeth
-        self.__class_method = cmeth
-        self.__owner = None
+        self.__instance_method = imeth  # type: typing.Optional[typing.Callable[..., typing.Any]]
+        self.__class_method = cmeth  # type: typing.Optional[typing.Callable[..., typing.Any]]
+        self.__owner = None  # type: typing.Optional[typing.Any]
         self.__name = ""
 
     def __set_name__(self, owner: typing.Any, name: str) -> None:
