@@ -15,9 +15,9 @@
 
 """Property with class-wide getter."""
 
-import typing  # noqa: F401  # pylint: disable=unused-import
-
 __all__ = ("AdvancedProperty",)
+
+import typing  # noqa: F401  # pylint: disable=unused-import
 
 
 class AdvancedProperty(object):
