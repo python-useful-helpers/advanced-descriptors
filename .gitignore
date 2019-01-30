@@ -1,13 +1,13 @@
 ### Test results
 /*_result*.xml
 /report.html
-/assets/*
+/assets/
 .cache/*
 .pytest_cache/
 
 ### Generated code
 /advanced_descriptors/*.c
-
+/pip-wheel-metadata/
 ### TortoiseGit template
 # Project-level settings
 /.tgitconfig
