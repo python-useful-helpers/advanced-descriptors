@@ -7,7 +7,7 @@
 
 ### Generated code
 /advanced_descriptors/*.c
-
+/pip-wheel-metadata/
 ### TortoiseGit template
 # Project-level settings
 /.tgitconfig
