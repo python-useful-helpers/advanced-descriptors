@@ -15,9 +15,9 @@
 
 import pkg_resources
 
-from .separate_class_method import SeparateClassMethod
 from .advanced_property import AdvancedProperty
 from .log_on_access import LogOnAccess
+from .separate_class_method import SeparateClassMethod
 
 __all__ = ("SeparateClassMethod", "AdvancedProperty", "LogOnAccess")
 
@@ -30,7 +30,7 @@ except pkg_resources.DistributionNotFound:
 
         __version__ = setuptools_scm.get_version()
     except ImportError:
-        pass
+        setuptools_scm = None
 
 __author__ = "Alexey Stepanov"
 __author_email__ = "penguinolog@gmail.com"

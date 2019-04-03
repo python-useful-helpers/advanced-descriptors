@@ -22,7 +22,6 @@ import sys
 import traceback
 import typing
 
-
 _logger: logging.Logger = logging.getLogger(__name__)
 
 
