@@ -239,25 +239,25 @@ class TestLogOnAccess(unittest.TestCase):
 
         target = Target()
 
-        getattr(target, "on_init_set")
+        getattr(target, "on_init_set")  # noqa: B009
         self.assertEqual(self.stream.getvalue(), "DEBUG:on_init_set:Target().<lambda> -> 'on_init_set'\n")
 
         self.stream.seek(0)
         self.stream.truncate()
 
-        getattr(target, "on_init_name")
+        getattr(target, "on_init_name")  # noqa: B009
         self.assertEqual(self.stream.getvalue(), "DEBUG:on_init_name:Target().<lambda> -> 'on_init_name'\n")
 
         self.stream.seek(0)
         self.stream.truncate()
 
-        getattr(target, "prop_set")
+        getattr(target, "prop_set")  # noqa: B009
         self.assertEqual(self.stream.getvalue(), "DEBUG:prop_set:Target().prop_set -> 'prop_set'\n")
 
         self.stream.seek(0)
         self.stream.truncate()
 
-        getattr(target, "prop_name")
+        getattr(target, "prop_name")  # noqa: B009
         self.assertEqual(self.stream.getvalue(), "DEBUG:prop_name:Target().prop_name -> 'prop_name'\n")
 
     def test_09_logger_implemented(self):

@@ -30,7 +30,7 @@ class TestAdvancedProperty(unittest.TestCase):
         del instance.val
         self.assertEqual(instance.val, 0)
         with self.assertRaises(AttributeError):
-            getattr(Target, "val")
+            getattr(Target, "val")  # noqa: B009
 
     def test_02_full(self):
         class Target:
@@ -82,10 +82,10 @@ class TestAdvancedProperty(unittest.TestCase):
             prop = advanced_descriptors.AdvancedProperty()
 
         with self.assertRaises(AttributeError):
-            getattr(Target, "prop")
+            getattr(Target, "prop")  # noqa: B009
 
         with self.assertRaises(AttributeError):
-            getattr(Target(), "prop")
+            getattr(Target(), "prop")  # noqa: B009
 
         with self.assertRaises(AttributeError):
             Target().prop = 1
