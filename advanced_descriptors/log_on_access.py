@@ -21,6 +21,7 @@ import logging
 import sys
 import traceback
 import typing
+import warnings
 
 _logger: logging.Logger = logging.getLogger(__name__)
 
@@ -162,6 +163,7 @@ class LogOnAccess(property):
         >>> logs[27] == 'Traceback (most recent call last):'
         True
         """
+        warnings.warn("LogOnAccess has been ported to logwrap with extended repr logic.", PendingDeprecationWarning)
         super(LogOnAccess, self).__init__(fget=fget, fset=fset, fdel=fdel, doc=doc)
 
         if logger is None or isinstance(logger, logging.Logger):
