@@ -55,7 +55,7 @@ REQUIRES_OPTIMIZATION = [
 if "win32" != sys.platform:
     REQUIRES_OPTIMIZATION.append(_extension("advanced_descriptors.__init__"))
 
-ext_modules = (
+EXT_MODULES = (
     cythonize(
         REQUIRES_OPTIMIZATION,
         compiler_directives=dict(
@@ -231,7 +231,7 @@ setup_args = dict(
     package_data={"advanced_descriptors": ["py.typed"]},
 )
 if cythonize is not None:
-    setup_args["ext_modules"] = ext_modules
+    setup_args["ext_modules"] = EXT_MODULES
     setup_args["cmdclass"] = dict(build_ext=AllowFailRepair)
 
 try:
