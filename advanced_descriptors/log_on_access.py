@@ -186,8 +186,8 @@ class LogOnAccess(property):
             return ""
         exc_info = sys.exc_info()
         stack = traceback.extract_stack()
-        tb = traceback.extract_tb(exc_info[2])
-        full_tb = stack[:1] + tb  # cut decorator and build full traceback
+        exc_tb = traceback.extract_tb(exc_info[2])
+        full_tb = stack[:1] + exc_tb  # cut decorator and build full traceback
         exc_line = traceback.format_exception_only(*exc_info[:2])  # type: typing.List[str]
         # Make standard traceback string
         tb_text = "\nTraceback (most recent call last):\n" + "".join(traceback.format_list(full_tb)) + "".join(exc_line)

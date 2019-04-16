@@ -17,27 +17,28 @@ from __future__ import print_function
 
 import ast
 import collections
-from distutils.command import build_ext
 import distutils.errors
 import os.path
 import shutil
 import sys
+from distutils.command import build_ext
+
+import setuptools
 
 try:
     from Cython.Build import cythonize
 except ImportError:
     cythonize = None
 
-import setuptools
 
 with open(os.path.join(os.path.dirname(__file__), "advanced_descriptors", "__init__.py")) as f:
-    source = f.read()
+    SOURCE = f.read()
 
 with open("requirements.txt") as f:
-    required = f.read().splitlines()
+    REQUIRED = f.read().splitlines()
 
 with open("README.rst") as f:
-    long_description = f.read()
+    LONG_DESCRIPTION = f.read()
 
 
 def _extension(modpath):
@@ -45,18 +46,18 @@ def _extension(modpath):
     return setuptools.Extension(modpath, [modpath.replace(".", "/") + ".py"])
 
 
-requires_optimization = [
+REQUIRES_OPTIMIZATION = [
     _extension("advanced_descriptors.separate_class_method"),
     _extension("advanced_descriptors.advanced_property"),
     _extension("advanced_descriptors.log_on_access"),
 ]
 
 if "win32" != sys.platform:
-    requires_optimization.append(_extension("advanced_descriptors.__init__"))
+    REQUIRES_OPTIMIZATION.append(_extension("advanced_descriptors.__init__"))
 
 ext_modules = (
     cythonize(
-        requires_optimization,
+        REQUIRES_OPTIMIZATION,
         compiler_directives=dict(
             always_allow_keywords=True, binding=True, embedsignature=True, overflowcheck=True, language_level=3
         ),
@@ -68,8 +69,6 @@ ext_modules = (
 
 class BuildFailed(Exception):
     """For install clear scripts."""
-
-    pass
 
 
 class AllowFailRepair(build_ext.build_ext):
@@ -186,9 +185,9 @@ def get_simple_vars_from_src(src):
     return result
 
 
-variables = get_simple_vars_from_src(source)
+VARIABLES = get_simple_vars_from_src(SOURCE)
 
-classifiers = [
+CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -202,21 +201,21 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
-keywords = ["descriptor", "property", "classmethod", "development"]
+KEYWORDS = ["descriptor", "property", "classmethod", "development"]
 
 setup_args = dict(
     name="Advanced-Descriptors",
-    author=variables["__author__"],
-    author_email=variables["__author_email__"],
+    author=VARIABLES["__author__"],
+    author_email=VARIABLES["__author_email__"],
     maintainer=", ".join(
-        "{name} <{email}>".format(name=name, email=email) for name, email in variables["__maintainers__"].items()
+        "{name} <{email}>".format(name=name, email=email) for name, email in VARIABLES["__maintainers__"].items()
     ),
-    url=variables["__url__"],
-    license=variables["__license__"],
-    description=variables["__description__"],
-    long_description=long_description,
-    classifiers=classifiers,
-    keywords=keywords,
+    url=VARIABLES["__url__"],
+    license=VARIABLES["__license__"],
+    description=VARIABLES["__description__"],
+    long_description=LONG_DESCRIPTION,
+    classifiers=CLASSIFIERS,
+    keywords=KEYWORDS,
     python_requires=">=3.4",
     # While setuptools cannot deal with pre-installed incompatible versions,
     # setting a lower bound is not harmful - it makes error messages cleaner. DO
@@ -231,7 +230,7 @@ setup_args = dict(
         "setuptools_scm",
     ],
     use_scm_version=True,
-    install_requires=required,
+    install_requires=REQUIRED,
     package_data={"advanced_descriptors": ["py.typed"]},
 )
 if cythonize is not None:
