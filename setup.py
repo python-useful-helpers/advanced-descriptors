@@ -22,19 +22,13 @@ import os.path
 import setuptools
 
 with open(os.path.join(os.path.dirname(__file__), "advanced_descriptors", "__init__.py")) as f:
-    source = f.read()
+    SOURCE = f.read()
 
 with open("requirements.txt") as f:
-    required = f.read().splitlines()
+    REQUIRED = f.read().splitlines()
 
 with open("README.rst") as f:
-    long_description = f.read()
-
-
-class BuildFailed(Exception):
-    """For install clear scripts."""
-
-    pass
+    LONG_DESCRIPTION = f.read()
 
 
 # noinspection PyUnresolvedReferences
@@ -110,9 +104,9 @@ def get_simple_vars_from_src(src):
     return result
 
 
-variables = get_simple_vars_from_src(source)
+VARIABLES = get_simple_vars_from_src(SOURCE)
 
-classifiers = [
+CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -128,21 +122,21 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
-keywords = ["descriptor", "property", "classmethod", "development"]
+KEYWORDS = ["descriptor", "property", "classmethod", "development"]
 
 setuptools.setup(
     name="Advanced-Descriptors",
-    author=variables["__author__"],
-    author_email=variables["__author_email__"],
+    author=VARIABLES["__author__"],
+    author_email=VARIABLES["__author_email__"],
     maintainer=", ".join(
-        "{name} <{email}>".format(name=name, email=email) for name, email in variables["__maintainers__"].items()
+        "{name} <{email}>".format(name=name, email=email) for name, email in VARIABLES["__maintainers__"].items()
     ),
-    url=variables["__url__"],
-    license=variables["__license__"],
-    description=variables["__description__"],
-    long_description=long_description,
-    classifiers=classifiers,
-    keywords=keywords,
+    url=VARIABLES["__url__"],
+    license=VARIABLES["__license__"],
+    description=VARIABLES["__description__"],
+    long_description=LONG_DESCRIPTION,
+    classifiers=CLASSIFIERS,
+    keywords=KEYWORDS,
     python_requires=">=2.7.5,!=3.0,!=3.1,!=3.2,!=3.3",
     # While setuptools cannot deal with pre-installed incompatible versions,
     # setting a lower bound is not harmful - it makes error messages cleaner. DO
@@ -157,6 +151,6 @@ setuptools.setup(
         "setuptools_scm",
     ],
     use_scm_version=True,
-    install_requires=required,
+    install_requires=REQUIRED,
     package_data={"advanced_descriptors": ["py.typed"]},
 )

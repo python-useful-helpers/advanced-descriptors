@@ -1,8 +1,8 @@
 Advanced descriptors
 ====================
 
-.. image:: https://travis-ci.org/python-useful-helpers/advanced-descriptors.svg?branch=master
-    :target: https://travis-ci.org/python-useful-helpers/advanced-descriptors
+.. image:: https://travis-ci.com/python-useful-helpers/advanced-descriptors.svg?branch=master
+    :target: https://travis-ci.com/python-useful-helpers/advanced-descriptors
 .. image:: https://coveralls.io/repos/github/python-useful-helpers/advanced-descriptors/badge.svg?branch=master
     :target: https://coveralls.io/github/python-useful-helpers/advanced-descriptors?branch=master
 .. image:: https://readthedocs.org/projects/advanced-descriptors/badge/?version=latest
@@ -133,7 +133,7 @@ CI systems
 ==========
 For code checking several CI systems is used in parallel:
 
-1. `Travis CI: <https://travis-ci.org/python-useful-helpers/advanced-descriptors>`_ is used for checking: PEP8, pylint, bandit, installation possibility and unit tests. Also it's publishes coverage on coveralls.
+1. `Travis CI: <https://travis-ci.com/python-useful-helpers/advanced-descriptors>`_ is used for checking: PEP8, pylint, bandit, installation possibility and unit tests. Also it's publishes coverage on coveralls.
 
 2. `coveralls: <https://coveralls.io/github/python-useful-helpers/advanced-descriptors>`_ is used for coverage display.
 
