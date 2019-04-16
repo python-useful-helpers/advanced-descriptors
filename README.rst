@@ -139,4 +139,4 @@ For code checking several CI systems is used in parallel:
 
 CD system
 =========
-`Travis CI: <https://travis-ci.org/python-useful-helpers/advanced-descriptors>`_ is used for package delivery on PyPI.
+`Travis CI: <https://travis-ci.com/python-useful-helpers/advanced-descriptors>`_ is used for package delivery on PyPI.
