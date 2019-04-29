@@ -138,7 +138,9 @@ Basic API is conform with `property`, but in addition it is possible to customiz
 
 Usage examples:
 
-1. Simple usage. All by default, logger is re-used from instance if available with names `logger` or `log` else used internal `advanced_descriptors.log_on_access` logger:
+1. Simple usage.
+   All by default.
+   logger is re-used from instance if available with names `logger` or `log` else used internal `advanced_descriptors.log_on_access` logger:
 
   .. code-block:: python
 
