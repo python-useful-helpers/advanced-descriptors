@@ -23,7 +23,7 @@ import traceback
 import typing
 import warnings
 
-_logger: logging.Logger = logging.getLogger(__name__)
+_LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 class LogOnAccess(property):
@@ -213,7 +213,7 @@ class LogOnAccess(property):
             return instance.logger
         elif hasattr(instance, "log") and isinstance(instance.log, logging.Logger):
             return instance.log
-        return _logger
+        return _LOGGER
 
     def __get__(self, instance: typing.Any, owner: typing.Optional[type] = None) -> typing.Any:
         """Get descriptor.
