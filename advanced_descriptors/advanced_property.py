@@ -216,9 +216,7 @@ class AdvancedProperty(object):
         """
         return self.__fcget
 
-    def getter(
-        self, fget  # type: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
-    ):  # type: (...) -> AdvancedProperty
+    def getter(self, fget):  # type: (typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]) -> AdvancedProperty
         """Descriptor to change the getter on a property.
 
         :param fget: new normal getter.
@@ -230,8 +228,8 @@ class AdvancedProperty(object):
         return self
 
     def setter(
-        self, fset  # type: typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]
-    ):  # type: (...) -> AdvancedProperty
+        self, fset
+    ):  # type: (typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]) -> AdvancedProperty
         """Descriptor to change the setter on a property.
 
         :param fset: new setter.
@@ -242,9 +240,7 @@ class AdvancedProperty(object):
         self.__fset = fset
         return self
 
-    def deleter(
-        self, fdel  # type: typing.Optional[typing.Callable[[typing.Any, ], None]]
-    ):  # type: (...) -> AdvancedProperty
+    def deleter(self, fdel):  # type: (typing.Optional[typing.Callable[[typing.Any, ], None]]) -> AdvancedProperty
         """Descriptor to change the deleter on a property.
 
         :param fdel: New deleter.
@@ -256,8 +252,8 @@ class AdvancedProperty(object):
         return self
 
     def cgetter(
-        self, fcget  # type: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
-    ):  # type: (...) -> AdvancedProperty
+        self, fcget
+    ):  # type: (typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]) -> AdvancedProperty
         """Descriptor to change the class wide getter on a property.
 
         :param fcget: new class-wide getter.

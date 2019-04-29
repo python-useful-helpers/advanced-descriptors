@@ -95,7 +95,7 @@ class SeparateClassMethod(object):
     def __init__(
         self,
         imeth=None,  # type: typing.Optional[typing.Callable[..., typing.Any]]
-        cmeth=None  # type: typing.Optional[typing.Callable[..., typing.Any]]
+        cmeth=None,  # type: typing.Optional[typing.Callable[..., typing.Any]]
     ):  # type: (...) -> None
         """Separate class method and instance methods.
 
@@ -108,10 +108,8 @@ class SeparateClassMethod(object):
         self.__class_method = cmeth
 
     def __get__(
-        self,
-        instance,  # type: typing.Optional[typing.Any]
-        owner  # type: typing.Any
-    ):  # type: (...) -> typing.Callable[..., typing.Any]
+        self, instance, owner
+    ):  # type: (typing.Optional[typing.Any], typing.Any) -> typing.Callable[..., typing.Any]
         """Get descriptor.
 
         :return: class method or instance method depends on call behavior
@@ -137,9 +135,8 @@ class SeparateClassMethod(object):
         return instance_method
 
     def instance_method(
-        self,
-        imeth  # type: typing.Optional[typing.Callable[..., typing.Any]]
-    ):  # type: (...) -> SeparateClassMethod
+        self, imeth
+    ):  # type: (typing.Optional[typing.Callable[..., typing.Any]]) -> SeparateClassMethod
         """Descriptor to change instance method.
 
         :param imeth: New instance method.
