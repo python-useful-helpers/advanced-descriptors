@@ -11,7 +11,7 @@ ignore=CVS
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
-ignore-patterns=
+ignore-patterns=_version.py
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
@@ -62,6 +62,8 @@ confidence=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
+enable=all
+
 disable=non-ascii-bytes-literal,
         raw-checker-failed,
         bad-inline-option,
@@ -70,10 +72,6 @@ disable=non-ascii-bytes-literal,
         suppressed-message,
         no-absolute-import,
         eq-without-hash,
-        exception-message-attribute,
-        invalid-str-codec,
-        next-method-defined,
-        xreadlines-attribute,
         comprehension-escape,
         similarities,
         too-many-ancestors,
@@ -95,7 +93,7 @@ disable=non-ascii-bytes-literal,
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once). See also the "--disable" option for examples.
-enable=c-extension-no-member
+# enable=c-extension-no-member
 
 
 [REPORTS]
