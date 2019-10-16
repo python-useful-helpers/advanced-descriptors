@@ -43,11 +43,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -U setuptools
           pip install -r requirements.txt
-          pip install -U pytest pylint pytest-pylint pytest-sugar isort[pyproject,requirements]
+          pip install -U pytest pylint pylint_junit isort[pyproject,requirements]
         displayName: 'Install dependencies'
 
       - script: |
-          pytest -vvv --pylint -m pylint --junitxml=pylint_result.xml advanced_descriptors
+          python setup.py --version
+        displayName: 'Generate version file'
+
+      - script: |
+          pylint --output-format=pylint_junit.JUnitReporter advanced_descriptors > pylint_result.xml
         displayName: 'PyLint'
 
       - task: PublishTestResults@2
@@ -70,8 +74,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -U setuptools
           pip install -r requirements.txt
-          pip install -U mypy
+          pip install -U "mypy>=0.700"
         displayName: 'Install dependencies'
+
+      - script: |
+          python setup.py --version
+        displayName: 'Generate version file'
 
       - script: |
           mypy --strict --junit-xml=mypy_result.xml advanced_descriptors
@@ -98,6 +106,7 @@ jobs:
     parameters: {name: 'Python_37', python: '3.7', architecture: 'x64', kind: 'cython'}
   - template: .azure_pipelines/run_tests.yml
     parameters: {name: 'Python_37', python: '3.7', architecture: 'x86', kind: 'cython'}
+
 
   - job: 'Build_and_deploy'
     dependsOn:

@@ -1,9 +1,12 @@
 ### Test results
 /*_result*.xml
 /report.html
-/assets/
+/assets/*
 .cache/*
-.pytest_cache/
+.pytest_cache/*
+
+### Generated version
+/advanced_descriptors/_version.py
 
 ### Generated code
 /advanced_descriptors/*.c

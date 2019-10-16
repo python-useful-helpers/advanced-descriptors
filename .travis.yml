@@ -47,7 +47,7 @@ _helpers:
 
 script:
   - python setup.py develop -v
-  - py.test -vv --cov-config .coveragerc --cov-report= --cov=advanced_descriptors test
+  - py.test -vvv --cov-config .coveragerc --cov-report= --cov=advanced_descriptors test
   - coverage report -m --fail-under 89
 after_success:
   - coveralls
@@ -59,8 +59,9 @@ jobs:
       install:
         - *upgrade_python_toolset
         - *install_deps
-        - pip install --upgrade "pylint > 2.3" isort[pyproject,requirements]
+        - pip install --upgrade "pylint >= 2.3" isort[pyproject,requirements]
       script:
+        - python setup.py --version
         - pylint advanced_descriptors
     - <<: *static_analysis
       name: "Bandit"
@@ -74,8 +75,9 @@ jobs:
       install:
         - *upgrade_python_toolset
         - *install_deps
-        - pip install --upgrade "mypy >= 0.670"
+        - pip install --upgrade "mypy >= 0.700"
       script:
+        - python setup.py --version
         - mypy --strict advanced_descriptors
     - <<: *static_analysis
       name: "PEP8"

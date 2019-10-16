@@ -17,6 +17,7 @@
 
 __all__ = ("SeparateClassMethod",)
 
+# Standard Library
 import functools
 import typing
 

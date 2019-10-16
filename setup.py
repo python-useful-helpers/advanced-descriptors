@@ -13,8 +13,7 @@
 
 """Advanced descriptors for special cases."""
 
-from __future__ import print_function
-
+# Standard Library
 import ast
 import collections
 import distutils.errors
@@ -23,15 +22,24 @@ import shutil
 import sys
 from distutils.command import build_ext
 
+# External Dependencies
 import setuptools
 
 try:
+    import typing
+except ImportError:
+    typing = None
+
+
+try:
+    # noinspection PyPackageRequirements
     from Cython.Build import cythonize
 except ImportError:
     cythonize = None
 
+PACKAGE_NAME = "advanced_descriptors"
 
-with open(os.path.join(os.path.dirname(__file__), "advanced_descriptors", "__init__.py")) as f:
+with open(os.path.join(os.path.dirname(__file__), PACKAGE_NAME, "__init__.py")) as f:
     SOURCE = f.read()
 
 with open("requirements.txt") as f:
@@ -77,7 +85,7 @@ class AllowFailRepair(build_ext.build_ext):
     def run(self):
         """Run.
 
-        :raises BuildFailed: extension build failed and need to skip cython part.
+        :raises BuildFailed: Build is failed and clean python code should be used.
         """
         try:
             build_ext.build_ext.run(self)
@@ -87,7 +95,7 @@ class AllowFailRepair(build_ext.build_ext):
             root_dir = os.path.abspath(os.path.join(__file__, ".."))
             target_dir = build_dir if not self.inplace else root_dir
 
-            src_file = os.path.join("advanced_descriptors", "__init__.py")
+            src_file = os.path.join(PACKAGE_NAME, "__init__.py")
 
             src = os.path.join(root_dir, src_file)
             dst = os.path.join(target_dir, src_file)
@@ -103,7 +111,7 @@ class AllowFailRepair(build_ext.build_ext):
     def build_extension(self, ext):
         """build_extension.
 
-        :raises BuildFailed: extension build failed and need to skip cython part.
+        :raises BuildFailed: Build is failed and clean python code should be used.
         """
         try:
             build_ext.build_ext.build_extension(self, ext)
@@ -117,7 +125,9 @@ class AllowFailRepair(build_ext.build_ext):
 
 
 # noinspection PyUnresolvedReferences
-def get_simple_vars_from_src(src):
+def get_simple_vars_from_src(
+    src: str
+) -> "typing.Dict[str, typing.Union[str, bytes, int, float, complex, list, set, dict, tuple, None]]":
     """Get simple (string/number/boolean and None) assigned values from source.
 
     :param src: Source code
@@ -195,12 +205,14 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
 KEYWORDS = ["descriptor", "property", "classmethod", "development"]
 
-setup_args = dict(
+SETUP_ARGS = dict(
     name="Advanced-Descriptors",
     author=VARIABLES["__author__"],
     author_email=VARIABLES["__author_email__"],
@@ -213,7 +225,7 @@ setup_args = dict(
     long_description=LONG_DESCRIPTION,
     classifiers=CLASSIFIERS,
     keywords=KEYWORDS,
-    python_requires=">=3.6",
+    python_requires=">=3.6.0",
     # While setuptools cannot deal with pre-installed incompatible versions,
     # setting a lower bound is not harmful - it makes error messages cleaner. DO
     # NOT set an upper bound on setuptools, as that will lead to uninstallable
@@ -226,18 +238,18 @@ setup_args = dict(
         "!=36.2.0",
         "setuptools_scm",
     ],
-    use_scm_version=True,
+    use_scm_version={'write_to': 'advanced_descriptors/_version.py'},
     install_requires=REQUIRED,
-    package_data={"advanced_descriptors": ["py.typed"]},
+    package_data={PACKAGE_NAME: ["py.typed"]},
 )
 if cythonize is not None:
-    setup_args["ext_modules"] = EXT_MODULES
-    setup_args["cmdclass"] = dict(build_ext=AllowFailRepair)
+    SETUP_ARGS["ext_modules"] = EXT_MODULES
+    SETUP_ARGS["cmdclass"] = dict(build_ext=AllowFailRepair)
 
 try:
-    setuptools.setup(**setup_args)
+    setuptools.setup(**SETUP_ARGS)
 except BuildFailed:
     print("*" * 80 + "\n" "* Build Failed!\n" "* Use clear scripts version.\n" "*" * 80 + "\n")
-    del setup_args["ext_modules"]
-    del setup_args["cmdclass"]
-    setuptools.setup(**setup_args)
+    del SETUP_ARGS["ext_modules"]
+    del SETUP_ARGS["cmdclass"]
+    setuptools.setup(**SETUP_ARGS)
