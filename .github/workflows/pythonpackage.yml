@@ -28,5 +28,5 @@ jobs:
         python setup.py develop -v
     - name: Test with pytest
       run: |
-        py.test -vvv --cov-config .coveragerc --cov-report= --cov=advanced_descriptors test
+        py.test --cov-config .coveragerc --cov-report= --cov=advanced_descriptors test
         coverage report -m --fail-under 89

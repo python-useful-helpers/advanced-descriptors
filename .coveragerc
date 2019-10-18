@@ -1,8 +1,8 @@
 [run]
 source =
-    advanced_descriptors
+  advanced_descriptors
 omit =
-    test/*
+  test/*
 branch = True
 [report]
 exclude_lines =
