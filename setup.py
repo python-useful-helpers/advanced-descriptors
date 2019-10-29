@@ -214,7 +214,7 @@ CLASSIFIERS = [
 KEYWORDS = ["descriptor", "property", "classmethod", "development"]
 
 SETUP_ARGS = dict(
-    name="Advanced-Descriptors",
+    name="advanced-descriptors",
     author=VARIABLES["__author__"],
     author_email=VARIABLES["__author_email__"],
     maintainer=", ".join(

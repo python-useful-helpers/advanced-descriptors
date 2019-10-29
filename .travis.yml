@@ -124,7 +124,7 @@ jobs:
         - *upgrade_python_toolset
         - *install_deps
       script:
-        - ./tools/run_docker.sh "Advanced_Descriptors"
+        - ./tools/run_docker.sh "advanced_descriptors"
       before_deploy:
         - *build_package
       deploy:
