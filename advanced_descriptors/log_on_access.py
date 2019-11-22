@@ -164,8 +164,8 @@ class LogOnAccess(property):
         >>> logs[27] == 'Traceback (most recent call last):'
         True
         """
-        warnings.warn("LogOnAccess has been ported to logwrap with extended repr logic.", PendingDeprecationWarning)
-        super(LogOnAccess, self).__init__(fget=fget, fset=fset, fdel=fdel, doc=doc)
+        warnings.warn("LogOnAccess has been ported to logwrap with extended repr logic.", DeprecationWarning)
+        super().__init__(fget=fget, fset=fset, fdel=fdel, doc=doc)
 
         if logger is None or isinstance(logger, logging.Logger):
             self.__logger: typing.Optional[logging.Logger] = logger
@@ -234,7 +234,7 @@ class LogOnAccess(property):
         logger: logging.Logger = self._get_logger_for_instance(instance)
 
         try:
-            result = super(LogOnAccess, self).__get__(instance, owner)
+            result = super().__get__(instance, owner)
             if self.log_success:
                 logger.log(self.log_level, f"{source}.{self.__name__} -> {result!r}")
             return result
@@ -259,7 +259,7 @@ class LogOnAccess(property):
         logger: logging.Logger = self._get_logger_for_instance(instance)
 
         try:
-            super(LogOnAccess, self).__set__(instance, value)
+            super().__set__(instance, value)
             if self.log_success:
                 logger.log(self.log_level, f"{source}.{self.__name__} = {value!r}")
         except Exception:
@@ -284,7 +284,7 @@ class LogOnAccess(property):
         logger: logging.Logger = self._get_logger_for_instance(instance)
 
         try:
-            super(LogOnAccess, self).__delete__(instance)
+            super().__delete__(instance)
             if self.log_success:
                 logger.log(self.log_level, f"del {source}.{self.__name__}")
         except Exception:

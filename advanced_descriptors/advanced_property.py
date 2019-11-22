@@ -133,7 +133,7 @@ class AdvancedProperty(property):
 
         .. note:: doc argument is not supported due to class wide getter usage.
         """
-        super(AdvancedProperty, self).__init__(fget=fget, fset=fset, fdel=fdel)
+        super().__init__(fget=fget, fset=fset, fdel=fdel)
 
         self.__fcget: typing.Optional[typing.Callable[[typing.Any], typing.Any]] = fcget
 
@@ -151,7 +151,7 @@ class AdvancedProperty(property):
             if self.__fcget is None:
                 raise AttributeError()
             return self.__fcget(owner)
-        return super(AdvancedProperty, self).__get__(instance, owner)
+        return super().__get__(instance, owner)
 
     @property
     def fcget(self) -> typing.Optional[typing.Callable[[typing.Any], typing.Any]]:
