@@ -1,11 +1,10 @@
 language: python
 os: linux
-dist: xenial
-sudo: true
+dist: bionic
 
 install:
   - &upgrade_python_toolset pip install --upgrade pip setuptools wheel
-  - &install_test_deps pip install --upgrade pytest pytest-sugar
+  - &install_test_deps pip install --upgrade pytest pytest-sugar coverage[toml]>=5.0
   - &install_deps pip install -r CI_REQUIREMENTS.txt
   - pip install --upgrade pytest-cov coveralls
 
@@ -16,6 +15,9 @@ _python:
   - &python37
     name: "Python 3.7"
     python: "3.7"
+  - &python38
+    name: "Python 3.8"
+    python: "3.8"
 
 _helpers:
   - &install_cython pip install --upgrade Cython
@@ -33,24 +35,45 @@ _helpers:
       - *build_package
       - *install_built
       - *test_no_cov
-    after_success: skip
 
   - &static_analysis
     stage: Static analysis
     <<: *python37
-    after_success: skip
 
   - &code_style_check
     stage: Code style check
     <<: *python37
-    after_success: skip
+
+  - &deploy
+    <<: *python37
+    if: tag IS present
+    services:
+    - docker
+    install:
+      - *upgrade_python_toolset
+      - *install_deps
+      - pip install -U --upgrade-strategy=eager --no-cache-dir twine
+    before_deploy:
+      - *build_package
+    deploy:
+      - provider: pypi
+        # `skip_cleanup: true` is required to preserve binary wheels, built
+        # inside of manylinux* docker container during `script` step above.
+        cleanup: false
+        skip_cleanup: true
+        username: penguinolog
+        password:
+          secure: mG8p4UUzpz9wBdbif68NunjLp3rSED/OJw2Rh1nLBSSNcKtRBVEW4Gm/KYfHHc+kXVB66Nkda+T214kx4WhDk7lVRDKVu7ej0ze2mJX9iYmxhjOt7dcldostPAT8ZFfIvxEpS3UYGCPRbWTdOeeTe3wqz7/boVjC4DZu82nTarBJzApEn5ivtVHMs9bCedmk9Potb3FOiOscjkmEiKSllVQhgHnE/WPBOkfsaSaTCQKeTnqcCqJehNo4ki0cbmtAMpdPoR4DxAlHFK9jFD/W5Pm8s3UMkCer7vTwImINYICuibAIKEKcHdSHXOWJ6FoT21mJdgTWoZQGlAAKw8KV9R8dM6bNazV9iJbM3qUTUEJzyb08miRUf6iKxoPR1MpfqxuZ+ExGHfb0gX/Nu75aNxCSTbQ1YJD/oeXaqRQwpeGmW8vAXB9JSThfiEafymWMOKYuvgg0GPIP2RlLw7+zacfw9915VFiLpKSPrD48YU3p9jamIUeYb2aEDHpQK3rH4JUeAjdWV+a0mi0xWLjFzrVFc3R3jyUPAoxLNHLxzmb8+55pevA1JPUEYY2dolGBnZ7eXBAOIkHgEFlqqRxp4TLXoQR98eESYwrvaSV2YA11IuAJHF4bBI1pUfuUO7KiIDhacVi8VfNu5lAw8M1tInZk4aYLK6sw8L7XKq5hfZs=
+        on:
+          tags: true
+        distributions: sdist
+        upload_docs: false
+        skip_existing: true
 
 script:
   - python setup.py develop -v
-  - py.test --cov-config .coveragerc --cov-report= --cov=advanced_descriptors test
+  - py.test --cov-report= --cov=advanced_descriptors test
   - coverage report -m --fail-under 89
-after_success:
-  - coveralls
 
 jobs:
   include:
@@ -98,48 +121,58 @@ jobs:
       name: "Black formatting"
       install:
         - *upgrade_python_toolset
-        - pip install --upgrade black
+        - pip install --upgrade black regex
       script:
         - black --check advanced_descriptors
 
     - stage: test
       <<: *python36
+      after_success:
+        - coveralls
     - stage: test
       <<: *python37
+      after_success:
+        - coveralls
+    - stage: test
+      <<: *python38
+      after_success:
+        - coveralls
 
     - <<: *test_cythonized
       <<: *python36
     - <<: *test_cythonized
       <<: *python37
+    - <<: *test_cythonized
+      <<: *python38
 
     - stage: deploy
       # This prevents job from appearing in test plan unless commit is tagged:
-      if: tag IS present
-      # Run on pypy to build not cythonized wheel
-      <<: *python37
+      <<: *deploy
       name: Build universal and cythonized bdist_wheel. Deploy bdist and sdist.
-      services:
-        - docker
-      install:
-        - *upgrade_python_toolset
-        - *install_deps
       script:
-        - ./tools/run_docker.sh "advanced_descriptors"
-      before_deploy:
-        - *build_package
-      deploy:
-        - provider: pypi
-          # `skip_cleanup: true` is required to preserve binary wheels, built
-          # inside of manylinux1 docker container during `script` step above.
-          skip_cleanup: true
-          user: penguinolog
-          password:
-            secure: "mG8p4UUzpz9wBdbif68NunjLp3rSED/OJw2Rh1nLBSSNcKtRBVEW4Gm/KYfHHc+kXVB66Nkda+T214kx4WhDk7lVRDKVu7ej0ze2mJX9iYmxhjOt7dcldostPAT8ZFfIvxEpS3UYGCPRbWTdOeeTe3wqz7/boVjC4DZu82nTarBJzApEn5ivtVHMs9bCedmk9Potb3FOiOscjkmEiKSllVQhgHnE/WPBOkfsaSaTCQKeTnqcCqJehNo4ki0cbmtAMpdPoR4DxAlHFK9jFD/W5Pm8s3UMkCer7vTwImINYICuibAIKEKcHdSHXOWJ6FoT21mJdgTWoZQGlAAKw8KV9R8dM6bNazV9iJbM3qUTUEJzyb08miRUf6iKxoPR1MpfqxuZ+ExGHfb0gX/Nu75aNxCSTbQ1YJD/oeXaqRQwpeGmW8vAXB9JSThfiEafymWMOKYuvgg0GPIP2RlLw7+zacfw9915VFiLpKSPrD48YU3p9jamIUeYb2aEDHpQK3rH4JUeAjdWV+a0mi0xWLjFzrVFc3R3jyUPAoxLNHLxzmb8+55pevA1JPUEYY2dolGBnZ7eXBAOIkHgEFlqqRxp4TLXoQR98eESYwrvaSV2YA11IuAJHF4bBI1pUfuUO7KiIDhacVi8VfNu5lAw8M1tInZk4aYLK6sw8L7XKq5hfZs="
-          on:
-            tags: true
-            distributions: sdist
-          skip_upload_docs: true
-          skip_existing: true
+        - ./tools/run_docker.sh advanced_descriptors
+
+    - stage: deploy
+      # This prevents job from appearing in test plan unless commit is tagged:
+      <<: *deploy
+      name: Build universal and cythonized for i686 bdist_wheel. Deploy bdist.
+      script:
+        - ./tools/run_docker_manylinux2014.sh advanced_descriptors "i686"
+
+    - stage: deploy
+      # This prevents job from appearing in test plan unless commit is tagged:
+      <<: *deploy
+      name: Build universal and cythonized for x86_64 bdist_wheel. Deploy bdist.
+      script:
+        - ./tools/run_docker_manylinux2014.sh advanced_descriptors "x86_64"
+
+    - stage: deploy
+      # This prevents job from appearing in test plan unless commit is tagged:
+      <<: *deploy
+      name: Build universal and cythonized for aarch64 bdist_wheel. Deploy bdist.
+      arch: arm64
+      script:
+        - ./tools/run_docker_manylinux2014.sh advanced_descriptors "aarch64"
 
 cache: pip
 before_cache:

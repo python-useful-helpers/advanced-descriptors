@@ -8,6 +8,7 @@ export PYTHONDONTWRITEBYTECODE=1
 package_name="$1"
 if [[ -z "$package_name" ]]
 then
+    # shellcheck disable=SC2210
     &>2 echo "Please pass package name as a first argument of this script ($0)"
     exit 1
 fi
@@ -18,13 +19,13 @@ arch=$(uname -m)
 rm -rf /io/.tox
 rm -rf /io/*.egg-info
 rm -rf /io/.pytest_cache
-find /io/ -noleaf -name *.py[co] -delete
+find /io/ -noleaf -name "*.py[co]" -delete
 
 echo
 echo
 echo "Compile wheels"
 for PYTHON in ${PYTHON_VERSIONS}; do
-    /opt/python/"${PYTHON}"/bin/pip install -U pip setuptools wheel
+    /opt/python/"${PYTHON}"/bin/pip install -U pip setuptools
     /opt/python/"${PYTHON}"/bin/pip install -r /io/build_requirements.txt
     /opt/python/"${PYTHON}"/bin/pip wheel /io/ -w /io/dist/
     cd /io
@@ -66,8 +67,8 @@ rm -rf /io/.pytest_cache
 rm -rf /io/.tox
 rm -f /io/.coverage
 # Clean caches and cythonized
-find /io/ -noleaf -name *.py[co] -delete
-find /io/ -noleaf -name *.c -delete
+find /io/ -noleaf -name "*.py[co]" -delete
+find /io/ -noleaf -name "*.c" -delete
 # Reset permissions
 chmod -v a+rwx /io/dist
 chmod -v a+rw /io/dist/*

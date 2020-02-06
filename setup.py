@@ -1,4 +1,4 @@
-#    Copyright 2016 - 2019 Alexey Stepanov aka penguinolog
+#    Copyright 2016 - 2020 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -132,7 +132,7 @@ def get_simple_vars_from_src(
 
     :param src: Source code
     :type src: str
-    :returns: OrderedDict with keys, values = variable names, values
+    :return: OrderedDict with keys, values = variable names, values
     :rtype: typing.Dict[
                 str,
                 typing.Union[
@@ -207,6 +207,7 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
