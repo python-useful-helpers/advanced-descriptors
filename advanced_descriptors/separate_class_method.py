@@ -106,10 +106,10 @@ class SeparateClassMethod:
         """
         self.__instance_method: typing.Optional[typing.Callable[..., typing.Any]] = imeth
         self.__class_method: typing.Optional[typing.Callable[..., typing.Any]] = cmeth
-        self.__owner: typing.Optional[typing.Any] = None
+        self.__owner: typing.Optional[type] = None
         self.__name: str = ""
 
-    def __set_name__(self, owner: typing.Any, name: str) -> None:
+    def __set_name__(self, owner: typing.Optional[type], name: str) -> None:
         """Set __name__ and __objclass__ property."""
         self.__owner = owner
         self.__name = name
@@ -127,26 +127,41 @@ class SeparateClassMethod:
 
             @functools.wraps(self.__class_method)
             def class_method(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-                """Bound class method."""
+                """Bound class method.
+
+                :return: bound class method result
+                :rtype: typing.Any
+                """
                 return self.__class_method(owner, *args, **kwargs)  # type: ignore
 
             return class_method
 
         @functools.wraps(self.__instance_method)
         def instance_method(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-            """Bound instance method."""
+            """Bound instance method.
+
+            :return: bound instance method result
+            :rtype: typing.Any
+            """
             return self.__instance_method(instance, *args, **kwargs)  # type: ignore
 
         return instance_method
 
     @property
-    def __objclass__(self) -> typing.Any:  # pragma: no cover
-        """Read-only owner."""
+    def __objclass__(self) -> typing.Optional[type]:  # pragma: no cover
+        """Read-only owner.
+
+        :return: property owner class
+        :rtype: typing.Optional[type]"""
         return self.__owner
 
     @property
     def __name__(self) -> str:  # pragma: no cover
-        """Read-only name."""
+        """Read-only name.
+
+        :return: attribute name (may be overridden)
+        :rtype: str
+        """
         return self.__name
 
     def instance_method(self, imeth: typing.Optional[typing.Callable[..., typing.Any]]) -> "SeparateClassMethod":

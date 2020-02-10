@@ -19,12 +19,14 @@ __all__ = ("LogOnAccess",)
 
 # Standard Library
 import logging
+import os
 import sys
 import traceback
 import typing
 import warnings
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
+_CURRENT_FILE = os.path.abspath(__file__)
 
 
 class LogOnAccess(property):
@@ -179,26 +181,57 @@ class LogOnAccess(property):
         self.__log_failure: bool = log_failure
         self.__log_traceback: bool = log_traceback
         self.__override_name: typing.Optional[str] = override_name
+        self.__name: str = ""
+        self.__owner: typing.Optional[type] = None
+
+    def __set_name__(self, owner: typing.Optional[type], name: str) -> None:
+        """Set __name__ and __objclass__ property."""
+        self.__owner = owner
+        self.__name = name
+
+    @property
+    def __objclass__(self) -> typing.Optional[type]:  # pragma: no cover
+        """Read-only owner.
+
+        :return: property owner class
+        :rtype: typing.Optional[type]
+        """
+        return self.__owner
 
     @property
     def __traceback(self) -> str:
-        """Get outer traceback text for logging."""
+        """Get outer traceback text for logging.
+
+        :return: traceback without decorator internals if traceback logging enabled else empty line
+        :rtype: str
+        """
         if not self.log_traceback:
             return ""
         exc_info = sys.exc_info()
-        stack = traceback.extract_stack()
-        exc_tb = traceback.extract_tb(exc_info[2])
-        full_tb = stack[:1] + exc_tb  # cut decorator and build full traceback
+        stack: traceback.StackSummary = traceback.extract_stack()
+        full_tb: typing.List[traceback.FrameSummary] = [elem for elem in stack if elem.filename != _CURRENT_FILE]
         exc_line: typing.List[str] = traceback.format_exception_only(*exc_info[:2])
         # Make standard traceback string
         tb_text = "\nTraceback (most recent call last):\n" + "".join(traceback.format_list(full_tb)) + "".join(exc_line)
         return tb_text
 
     def __get_obj_source(self, instance: typing.Any, owner: typing.Optional[type] = None) -> str:
-        """Get object repr block."""
+        """Get object repr block.
+
+        :param instance: object instance
+        :type instance: typing.Any
+        :param owner: object class (available for getter usage only)
+        :type owner: typing.Optional[type]
+        :return: repr of object if it not disabled else repr placeholder
+        :rtype: str
+        """
         if self.log_object_repr:
             return f"{instance!r}"
-        return f"<{owner.__name__ if owner is not None else instance.__class__.__name__}() at 0x{id(instance):X}>"
+        if owner is not None:
+            return f"<{owner.__name__}() at 0x{id(instance):X}>"
+        if self.__objclass__ is not None:
+            return f"<{self.__objclass__.__name__}() at 0x{id(instance):X}>"
+        return f"<{instance.__class__.__name__}() at 0x{id(instance):X}>"
 
     def _get_logger_for_instance(self, instance: typing.Any) -> logging.Logger:
         """Get logger for log calls.
@@ -216,7 +249,33 @@ class LogOnAccess(property):
             return instance.log
         return _LOGGER
 
-    def __get__(self, instance: typing.Any, owner: typing.Optional[type] = None) -> typing.Any:
+    @typing.overload
+    def __get__(self, instance: None, owner: typing.Optional[type] = None) -> typing.NoReturn:
+        """Get descriptor.
+
+        :param instance: Owner class instance. Filled only if instance created, else None.
+        :type instance: typing.Optional[owner]
+        :param owner: Owner class for property.
+        :return: getter call result if getter presents
+        :rtype: typing.Any
+        :raises AttributeError: Getter is not available
+        :raises Exception: Something goes wrong
+        """
+
+    @typing.overload
+    def __get__(self, instance: typing.Any, owner: typing.Optional[type] = None) -> typing.Any:  # noqa: F811
+        """Get descriptor.
+
+        :param instance: Owner class instance. Filled only if instance created, else None.
+        :type instance: typing.Optional[owner]
+        :param owner: Owner class for property.
+        :return: getter call result if getter presents
+        :rtype: typing.Any
+        :raises AttributeError: Getter is not available
+        :raises Exception: Something goes wrong
+        """
+
+    def __get__(self, instance: typing.Any, owner: typing.Optional[type] = None) -> typing.Any:  # noqa: F811
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
@@ -294,12 +353,20 @@ class LogOnAccess(property):
 
     @property
     def logger(self) -> typing.Optional[logging.Logger]:
-        """Logger instance to use as override."""
+        """Logger instance to use as override.
+
+        :return: logger instance if set
+        :rtype: typing.Optional[logging.Logger]
+        """
         return self.__logger
 
     @logger.setter
     def logger(self, logger: typing.Union[logging.Logger, str, None]) -> None:
-        """Logger instance to use as override."""
+        """Logger instance to use as override.
+
+        :param logger: logger instance, logger name or None if override disable required
+        :type logger: typing.Union[logging.Logger, str, None]
+        """
         if logger is None or isinstance(logger, logging.Logger):
             self.__logger = logger
         else:
@@ -307,86 +374,148 @@ class LogOnAccess(property):
 
     @property
     def log_object_repr(self) -> bool:
-        """Use `repr` over object to describe owner if True else owner class name and id."""
+        """Use `repr` over object to describe owner if True else owner class name and id.
+
+        :return: switch state
+        :rtype: bool
+        """
         return self.__log_object_repr
 
     @log_object_repr.setter
     def log_object_repr(self, value: bool) -> None:
-        """Use `repr` over object to describe owner if True else owner class name and id."""
+        """Use `repr` over object to describe owner if True else owner class name and id.
+
+        :param value: switch state
+        :type value: bool
+        """
         self.__log_object_repr = value
 
     @property
     def log_level(self) -> int:
-        """Log level for successful operations."""
+        """Log level for successful operations.
+
+        :return: log level
+        :rtype: int
+        """
         return self.__log_level
 
     @log_level.setter
     def log_level(self, value: int) -> None:
-        """Log level for successful operations."""
+        """Log level for successful operations.
+
+        :param value: log level
+        :type value: int
+        """
         self.__log_level = value
 
     @property
     def exc_level(self) -> int:
-        """Log level for exceptions."""
+        """Log level for exceptions.
+
+        :return: log level
+        :rtype: int
+        """
         return self.__exc_level
 
     @exc_level.setter
     def exc_level(self, value: int) -> None:
-        """Log level for exceptions."""
+        """Log level for exceptions.
+
+        :param value: log level
+        :type value: int
+        """
         self.__exc_level = value
 
     @property
     def log_success(self) -> bool:
-        """Log successful operations."""
+        """Log successful operations.
+
+        :return: switch state
+        :rtype: bool
+        """
         return self.__log_success
 
     @log_success.setter
     def log_success(self, value: bool) -> None:
-        """Log successful operations."""
+        """Log successful operations.
+
+        :param value: switch state
+        :type value: bool
+        """
         self.__log_success = value
 
     @property
     def log_failure(self) -> bool:
-        """Log exceptions."""
+        """Log exceptions.
+
+        :return: switch state
+        :rtype: bool
+        """
         return self.__log_failure
 
     @log_failure.setter
     def log_failure(self, value: bool) -> None:
-        """Log exceptions."""
+        """Log exceptions.
+
+        :param value: switch state
+        :type value: bool
+        """
         self.__log_failure = value
 
     @property
     def log_traceback(self) -> bool:
-        """Log traceback on exceptions."""
+        """Log traceback on exceptions.
+
+        :return: switch state
+        :rtype: bool
+        """
         return self.__log_traceback
 
     @log_traceback.setter
     def log_traceback(self, value: bool) -> None:
-        """Log traceback on exceptions."""
+        """Log traceback on exceptions.
+
+        :param value: switch state
+        :type value: bool
+        """
         self.__log_traceback = value
 
     @property
     def override_name(self) -> typing.Optional[str]:
-        """Override property name if not None else use getter/setter/deleter name."""
+        """Override property name if not None else use getter/setter/deleter name.
+
+        :return: property name override
+        :rtype: typing.Optional[str]
+        """
         return self.__override_name
 
     @override_name.setter
     def override_name(self, name: typing.Optional[str]) -> None:
-        """Override property name if not None else use getter/setter/deleter name."""
+        """Override property name if not None else use getter/setter/deleter name.
+
+        :param name: property name override
+        :type name: typing.Optional[str]
+        """
         self.__override_name = name
 
     @property
     def __name__(self) -> str:
-        """Name getter."""
-        return (
-            self.override_name or self.fget.__name__
-            if self.fget is not None
-            else self.fset.__name__
-            if self.fset is not None
-            else self.fdel.__name__
-            if self.fdel is not None
-            else ""
-        )
+        """Name getter.
+
+        :return: attribute name (may be overridden)
+        :rtype: str
+        """
+        if self.override_name:
+            return self.override_name
+        if self.__name:
+            return self.__name
+        if self.fget is not None:
+            return self.fget.__name__
+        if self.fset is not None:
+            return self.fset.__name__
+        if self.fdel is not None:
+            return self.fdel.__name__
+        return ""
 
 
 if __name__ == "__main__":  # pragma: no cover

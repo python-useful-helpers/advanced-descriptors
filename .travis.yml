@@ -72,7 +72,7 @@ _helpers:
 
 script:
   - python setup.py develop -v
-  - py.test --cov-report= --cov=advanced_descriptors test
+  - py.test --cov-report= --cov=advanced_descriptors
   - coverage report -m --fail-under 89
 
 jobs:
