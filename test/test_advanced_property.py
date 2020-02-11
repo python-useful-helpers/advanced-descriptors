@@ -1,12 +1,18 @@
 # pylint: skip-file
 
+"""Tests for AdvancedProperty."""
+
 import unittest
 
 import advanced_descriptors
 
 
 class TestAdvancedProperty(unittest.TestCase):
+    """Main tests for AdvancedProperty."""
+
     def test_01_normal_property(self):
+        """Test work like normal property."""
+
         class Target:
             def __init__(tself):
                 tself._value = 42
@@ -33,6 +39,8 @@ class TestAdvancedProperty(unittest.TestCase):
             getattr(Target, "val")  # noqa: B009
 
     def test_02_full(self):
+        """Test all getters + setter + deleter implemented."""
+
         class Target:
             _value = 777
 
@@ -67,6 +75,8 @@ class TestAdvancedProperty(unittest.TestCase):
         self.assertEqual(Target.val, 777)
 
     def test_03_class_wide_only(self):
+        """Test class wide getter is implemented, while instance not."""
+
         class Target:
             getcls = advanced_descriptors.AdvancedProperty()
 
@@ -78,6 +88,8 @@ class TestAdvancedProperty(unittest.TestCase):
         self.assertIs(Target, Target().getcls)
 
     def test_04_no_methods(self):
+        """Test no any methods implemented."""
+
         class Target:
             prop = advanced_descriptors.AdvancedProperty()
 
@@ -94,6 +106,8 @@ class TestAdvancedProperty(unittest.TestCase):
             del Target().prop
 
     def test_05_methods_access(self):
+        """Test access to original methods."""
+
         def getter(inst):
             return inst._value
 

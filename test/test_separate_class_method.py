@@ -1,12 +1,18 @@
 # pylint: skip-file
 
+"""Tests for SeparateClassMethod."""
+
 import unittest
 
 import advanced_descriptors
 
 
 class TestSeparateClassMethod(unittest.TestCase):
+    """Main tests for SeparateClassMethod."""
+
     def test_01_instance_method(self):
+        """Test instance method support with decorating in-place."""
+
         class Target(object):
             def __init__(tself):
                 tself.value = 42
@@ -21,6 +27,8 @@ class TestSeparateClassMethod(unittest.TestCase):
             Target.getval()
 
     def test_02_alt_instance_method(self):
+        """Test instance method support with late bind."""
+
         class Target(object):
             def __init__(tself):
                 tself.value = 42
@@ -37,6 +45,8 @@ class TestSeparateClassMethod(unittest.TestCase):
             Target.getval()
 
     def test_03_class_method(self):
+        """Test class method support."""
+
         class Target(object):
             getcls = advanced_descriptors.SeparateClassMethod()
 
@@ -48,6 +58,8 @@ class TestSeparateClassMethod(unittest.TestCase):
         self.assertIs(Target, Target().getcls())
 
     def test_04_both(self):
+        """Test coexistency of class method and instance method."""
+
         class Target(object):
             value = 1
 
@@ -67,6 +79,7 @@ class TestSeparateClassMethod(unittest.TestCase):
         self.assertEqual(Target.getval(), 1)
 
     def test_05_functions_access(self):
+        """Test possibility to get original functions from decorator object."""
         def imeth(instance):
             return instance.value
 

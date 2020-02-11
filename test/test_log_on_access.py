@@ -1,5 +1,7 @@
 # pylint: skip-file
 
+"""Tests for LogOnAccess descriptor."""
+
 import io
 import logging
 import unittest
@@ -8,22 +10,28 @@ import advanced_descriptors
 
 
 class TestLogOnAccess(unittest.TestCase):
+    """Main tests for LogOnAccess descriptor."""
+
     def setUp(self):
+        """Initialize specific logger for tests."""
         self.stream = io.StringIO()
         logging.getLogger().handlers.clear()
         logging.basicConfig(level=logging.DEBUG, stream=self.stream)
 
     def tearDown(self):
+        """Close test logger."""
         logging.getLogger().handlers.clear()
         self.stream.close()
 
     def test_01_positive(self):
+        """Test positive scenario."""
+
         class Target:
             def __init__(self, val="ok"):
                 self.val = val
 
             def __repr__(self):
-                return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+                return f"{self.__class__.__name__}(val={self.val})"
 
             @advanced_descriptors.LogOnAccess
             def ok(self):
@@ -56,6 +64,8 @@ class TestLogOnAccess(unittest.TestCase):
         self.assertEqual(self.stream.getvalue(), "DEBUG:advanced_descriptors.log_on_access:del Target(val=OK).ok\n")
 
     def test_02_positive_properties(self):
+        """Test positive scenario with non standard settings."""
+
         class Target:
             def __init__(self, val="ok"):
                 self.val = val
@@ -76,10 +86,12 @@ class TestLogOnAccess(unittest.TestCase):
         self.assertEqual(target.ok, "ok")
         self.assertEqual(
             self.stream.getvalue(),
-            "INFO:advanced_descriptors.log_on_access:<Target() at 0x{id:X}>.override -> 'ok'\n".format(id=id(target)),
+            f"INFO:advanced_descriptors.log_on_access:<Target() at 0x{id(target):X}>.override -> 'ok'\n",
         )
 
     def test_03_positive_no_log(self):
+        """Test log_success flag."""
+
         class Target:
             def __init__(self, val="ok"):
                 self.val = val
@@ -99,9 +111,11 @@ class TestLogOnAccess(unittest.TestCase):
         self.assertEqual(self.stream.getvalue(), "")
 
     def test_04_negative(self):
+        """Test basic negative scenario."""
+
         class Target:
             def __repr__(self):
-                return "{cls}()".format(cls=self.__class__.__name__)
+                return f"{self.__class__.__name__}()"
 
             @advanced_descriptors.LogOnAccess
             def ok(self):
@@ -147,6 +161,8 @@ class TestLogOnAccess(unittest.TestCase):
         )
 
     def test_05_negative_properties(self):
+        """Test negative scenario with non standard settings."""
+
         class Target:
             def __init__(self, val="ok"):
                 self.val = val
@@ -170,11 +186,13 @@ class TestLogOnAccess(unittest.TestCase):
 
         self.assertEqual(
             self.stream.getvalue().splitlines()[0],
-            "ERROR:advanced_descriptors.log_on_access:Failed: <Target() at 0x{id:X}>.override".format(id=id(target)),
+            f"ERROR:advanced_descriptors.log_on_access:Failed: <Target() at 0x{id(target):X}>.override",
         )
         self.assertEqual(len(self.stream.getvalue().splitlines()), 1)
 
     def test_06_negative_no_log(self):
+        """Test log_failure flag."""
+
         class Target:
             def __init__(self, val="ok"):
                 self.val = val
@@ -196,9 +214,11 @@ class TestLogOnAccess(unittest.TestCase):
         self.assertEqual(self.stream.getvalue(), "")
 
     def test_07_property_mimic(self):
+        """Test property API not broken."""
+
         class Target:
             def __repr__(self):
-                return "{}()".format(self.__class__.__name__)
+                return f"{self.__class__.__name__}()"
 
             empty = advanced_descriptors.LogOnAccess(doc="empty_property")
 
@@ -216,6 +236,8 @@ class TestLogOnAccess(unittest.TestCase):
         self.assertEqual(self.stream.getvalue(), "")
 
     def test_08_logger(self):
+        """Test with logger enforced."""
+
         class Target:
             on_init_set = advanced_descriptors.LogOnAccess(
                 logger=logging.getLogger("on_init_set"), fget=lambda self: "on_init_set"
@@ -235,7 +257,7 @@ class TestLogOnAccess(unittest.TestCase):
             prop_name.logger = "prop_name"
 
             def __repr__(self):
-                return "{}()".format(self.__class__.__name__)
+                return f"{self.__class__.__name__}()"
 
         target = Target()
 
@@ -261,6 +283,8 @@ class TestLogOnAccess(unittest.TestCase):
         self.assertEqual(self.stream.getvalue(), "DEBUG:prop_name:Target().prop_name -> 'prop_name'\n")
 
     def test_09_logger_implemented(self):
+        """Test with logger attribute available in target instance."""
+
         class Target:
             def __init__(self, val="ok"):
                 self.val = val
@@ -300,13 +324,15 @@ class TestLogOnAccess(unittest.TestCase):
         self.assertEqual(self.stream.getvalue(), "DEBUG:Target:del Target(val=OK).ok\n")
 
     def test_10_log_implemented(self):
+        """Test with log attribute available in target instance."""
+
         class Target:
             def __init__(self, val="ok"):
                 self.val = val
                 self.log = logging.getLogger(self.__class__.__name__)
 
             def __repr__(self):
-                return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+                return f"{self.__class__.__name__}(val={self.val})"
 
             @advanced_descriptors.LogOnAccess
             def ok(self):

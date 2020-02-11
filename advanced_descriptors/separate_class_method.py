@@ -152,7 +152,8 @@ class SeparateClassMethod:
         """Read-only owner.
 
         :return: property owner class
-        :rtype: typing.Optional[type]"""
+        :rtype: typing.Optional[type]
+        """
         return self.__owner
 
     @property
