@@ -21,6 +21,7 @@ from .separate_class_method import SeparateClassMethod
 __all__ = ("SeparateClassMethod", "AdvancedProperty", "LogOnAccess")
 
 try:
+    # Local Implementation
     from ._version import version as __version__
 except ImportError:
     pass
