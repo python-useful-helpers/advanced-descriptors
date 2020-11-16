@@ -4,20 +4,20 @@ dist: bionic
 
 install:
   - &upgrade_python_toolset pip install --upgrade pip setuptools wheel
-  - &install_test_deps pip install --upgrade pytest pytest-sugar coverage[toml]>=5.0
+  - &install_test_deps pip install --upgrade -r pytest_requirements.txt
   - &install_deps pip install -r CI_REQUIREMENTS.txt
-  - pip install --upgrade pytest-cov coveralls
+  - pip install --upgrade coveralls
 
 _python:
-  - &python36
-    name: "Python 3.6"
-    python: "3.6"
   - &python37
     name: "Python 3.7"
     python: "3.7"
   - &python38
     name: "Python 3.8"
     python: "3.8"
+  - &python39
+    name: "Python 3.9"
+    python: "3.9"
 
 _helpers:
   - &install_cython pip install --upgrade Cython
@@ -38,14 +38,14 @@ _helpers:
 
   - &static_analysis
     stage: Static analysis
-    <<: *python37
+    <<: *python38
 
   - &code_style_check
     stage: Code style check
-    <<: *python37
+    <<: *python38
 
   - &deploy
-    <<: *python37
+    <<: *python38
     if: tag IS present
     services:
     - docker
@@ -82,7 +82,7 @@ jobs:
       install:
         - *upgrade_python_toolset
         - *install_deps
-        - pip install --upgrade "pylint >= 2.3"
+        - pip install --upgrade "pylint >= 2.6.0"
       script:
         - python setup.py develop -v clean
         - python setup.py --version clean
@@ -107,7 +107,7 @@ jobs:
       name: "PEP8"
       install:
         - *upgrade_python_toolset
-        - pip install --upgrade flake8 flake8-bugbear
+        - pip install --upgrade -r flake8_requirements.txt
       script:
         - flake8
 
@@ -127,24 +127,24 @@ jobs:
         - black --check advanced_descriptors
 
     - stage: test
-      <<: *python36
-      after_success:
-        - coveralls
-    - stage: test
       <<: *python37
       after_success:
         - coveralls
     - stage: test
       <<: *python38
+      after_success:
+        - coveralls
+    - stage: test
+      <<: *python39
       after_success:
         - coveralls
 
     - <<: *test_cythonized
-      <<: *python36
-    - <<: *test_cythonized
       <<: *python37
     - <<: *test_cythonized
       <<: *python38
+    - <<: *test_cythonized
+      <<: *python39
 
     - stage: deploy
       # This prevents job from appearing in test plan unless commit is tagged:
@@ -159,13 +159,6 @@ jobs:
       name: Build universal and cythonized for i686 bdist_wheel. Deploy bdist.
       script:
         - ./tools/run_docker_manylinux2014.sh advanced_descriptors "i686"
-
-    - stage: deploy
-      # This prevents job from appearing in test plan unless commit is tagged:
-      <<: *deploy
-      name: Build universal and cythonized for x86_64 bdist_wheel. Deploy bdist.
-      script:
-        - ./tools/run_docker_manylinux2014.sh advanced_descriptors "x86_64"
 
     - stage: deploy
       # This prevents job from appearing in test plan unless commit is tagged:

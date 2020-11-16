@@ -3,9 +3,8 @@ Advanced descriptors
 
 .. image:: https://travis-ci.com/python-useful-helpers/advanced-descriptors.svg?branch=master
     :target: https://travis-ci.com/python-useful-helpers/advanced-descriptors
-.. image:: https://dev.azure.com/python-useful-helpers/advanced-descriptors/_apis/build/status/python-useful-helpers.advanced-descriptors?branchName=master
-    :alt: Azure DevOps builds
-    :target: https://dev.azure.com/python-useful-helpers/advanced-descriptors/_build?definitionId=2
+.. image:: https://github.com/python-useful-helpers/advanced-descriptors/workflows/Python%20package/badge.svg
+    :target: https://github.com/python-useful-helpers/advanced-descriptors/actions
 .. image:: https://coveralls.io/repos/github/python-useful-helpers/advanced-descriptors/badge.svg?branch=master
     :target: https://coveralls.io/github/python-useful-helpers/advanced-descriptors?branch=master
 .. image:: https://readthedocs.org/projects/advanced-descriptors/badge/?version=latest
