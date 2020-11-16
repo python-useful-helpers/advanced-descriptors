@@ -9,6 +9,9 @@ install:
   - pip install --upgrade coveralls
 
 _python:
+  - &python36
+    name: "Python 3.6"
+    python: "3.6"
   - &python37
     name: "Python 3.7"
     python: "3.7"
@@ -127,6 +130,10 @@ jobs:
         - black --check advanced_descriptors
 
     - stage: test
+      <<: *python36
+      after_success:
+        - coveralls
+    - stage: test
       <<: *python37
       after_success:
         - coveralls
@@ -139,6 +146,8 @@ jobs:
       after_success:
         - coveralls
 
+    - <<: *test_cythonized
+      <<: *python36
     - <<: *test_cythonized
       <<: *python37
     - <<: *test_cythonized
@@ -159,6 +168,13 @@ jobs:
       name: Build universal and cythonized for i686 bdist_wheel. Deploy bdist.
       script:
         - ./tools/run_docker_manylinux2014.sh advanced_descriptors "i686"
+
+    - stage: deploy
+      # This prevents job from appearing in test plan unless commit is tagged:
+      <<: *deploy
+      name: Build universal and cythonized for x86_64 bdist_wheel. Deploy bdist.
+      script:
+        - ./tools/run_docker_manylinux2014.sh advanced_descriptors "x86_64"
 
     - stage: deploy
       # This prevents job from appearing in test plan unless commit is tagged:
