@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-#    Copyright 2016 - 2019 Alexey Stepanov aka penguinolog
+#    Copyright 2016 - 2021 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
-#
+
 #         http://www.apache.org/licenses/LICENSE-2.0
-#
+
 #    Unless required by applicable law or agreed to in writing, software
 #    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,13 +15,19 @@
 
 """Property with class-wide getter."""
 
-__all__ = ("AdvancedProperty",)
+from __future__ import annotations
 
 # Standard Library
 import typing
 
+__all__ = ("AdvancedProperty",)
 
-class AdvancedProperty(property):
+_OwnerClassT = typing.TypeVar("_OwnerClassT")
+_ReturnT = typing.TypeVar("_ReturnT")
+_ClassReturnT = typing.TypeVar("_ClassReturnT")
+
+
+class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassReturnT]):
     """Property with class-wide getter.
 
     This property allows implementation of read-only getter for classes
@@ -115,10 +121,10 @@ class AdvancedProperty(property):
 
     def __init__(
         self,
-        fget: typing.Optional[typing.Callable[[typing.Any], typing.Any]] = None,
-        fset: typing.Optional[typing.Callable[[typing.Any, typing.Any], None]] = None,
-        fdel: typing.Optional[typing.Callable[[typing.Any], None]] = None,
-        fcget: typing.Optional[typing.Callable[[typing.Any], typing.Any]] = None,
+        fget: typing.Optional[typing.Callable[[_OwnerClassT], _ReturnT]] = None,
+        fset: typing.Optional[typing.Callable[[_OwnerClassT, _ReturnT], None]] = None,
+        fdel: typing.Optional[typing.Callable[[_OwnerClassT], None]] = None,
+        fcget: typing.Optional[typing.Callable[[typing.Type[_OwnerClassT]], _ClassReturnT]] = None,
     ) -> None:
         """Advanced property main entry point.
 
@@ -135,9 +141,21 @@ class AdvancedProperty(property):
         """
         super().__init__(fget=fget, fset=fset, fdel=fdel)
 
-        self.__fcget: typing.Optional[typing.Callable[[typing.Any], typing.Any]] = fcget
+        self.__fcget: typing.Optional[typing.Callable[[typing.Type[_OwnerClassT]], _ClassReturnT]] = fcget
 
-    def __get__(self, instance: typing.Any, owner: typing.Any = None) -> typing.Any:
+    @typing.overload
+    def __get__(self, instance: None, owner: typing.Type[_OwnerClassT]) -> _ClassReturnT:
+        """Class method."""
+
+    @typing.overload
+    def __get__(self, instance: _OwnerClassT, owner: typing.Optional[typing.Type[_OwnerClassT]] = None) -> _ReturnT:
+        """Normal method."""
+
+    def __get__(
+        self,
+        instance: typing.Optional[_OwnerClassT],
+        owner: typing.Optional[typing.Type[_OwnerClassT]] = None,
+    ) -> typing.Union[_ClassReturnT, _ReturnT]:
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
@@ -151,10 +169,10 @@ class AdvancedProperty(property):
             if self.__fcget is None:
                 raise AttributeError()
             return self.__fcget(owner)
-        return super().__get__(instance, owner)
+        return super().__get__(instance, owner)  # type: ignore
 
     @property
-    def fcget(self) -> typing.Optional[typing.Callable[[typing.Any], typing.Any]]:
+    def fcget(self) -> typing.Optional[typing.Callable[[typing.Type[_OwnerClassT]], _ClassReturnT]]:
         """Class wide getter instance.
 
         :return: Class wide getter instance
@@ -162,7 +180,10 @@ class AdvancedProperty(property):
         """
         return self.__fcget
 
-    def cgetter(self, fcget: typing.Optional[typing.Callable[[typing.Any], typing.Any]]) -> "AdvancedProperty":
+    def cgetter(
+        self,
+        fcget: typing.Optional[typing.Callable[[typing.Type[_OwnerClassT]], _ClassReturnT]],
+    ) -> AdvancedProperty[_OwnerClassT, _ReturnT, _ClassReturnT]:
         """Descriptor to change the class wide getter on a property.
 
         :param fcget: new class-wide getter.

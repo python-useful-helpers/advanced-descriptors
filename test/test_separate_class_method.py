@@ -80,6 +80,7 @@ class TestSeparateClassMethod(unittest.TestCase):
 
     def test_05_functions_access(self):
         """Test possibility to get original functions from decorator object."""
+
         def imeth(instance):
             return instance.value
 

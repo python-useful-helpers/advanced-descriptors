@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-#    Copyright 2016 - 2019 Alexey Stepanov aka penguinolog
+#    Copyright 2016 - 2021 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
-#
+
 #         http://www.apache.org/licenses/LICENSE-2.0
-#
+
 #    Unless required by applicable law or agreed to in writing, software
 #    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -18,6 +18,7 @@
 __all__ = ("LogOnAccess",)
 
 # Standard Library
+import inspect
 import logging
 import os
 import sys
@@ -27,9 +28,13 @@ import warnings
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 _CURRENT_FILE = os.path.abspath(__file__)
+_OwnerT = typing.TypeVar("_OwnerT")
+_ReturnT = typing.TypeVar("_ReturnT")
+
+VALID_LOGGER_NAMES = ("LOGGER", "LOG", "logger", "log", "_logger", "_log")
 
 
-class LogOnAccess(property):
+class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
     """Property with logging on successful get/set/delete or failure.
 
     .. versionadded:: 2.1.0
@@ -38,9 +43,9 @@ class LogOnAccess(property):
 
     def __init__(
         self,
-        fget: typing.Optional[typing.Callable[[typing.Any], typing.Any]] = None,
-        fset: typing.Optional[typing.Callable[[typing.Any, typing.Any], None]] = None,
-        fdel: typing.Optional[typing.Callable[[typing.Any], None]] = None,
+        fget: typing.Optional[typing.Callable[[_OwnerT], _ReturnT]] = None,
+        fset: typing.Optional[typing.Callable[[_OwnerT, _ReturnT], None]] = None,
+        fdel: typing.Optional[typing.Callable[[_OwnerT], None]] = None,
         doc: typing.Optional[str] = None,
         *,
         # Extended settings start
@@ -182,15 +187,21 @@ class LogOnAccess(property):
         self.__log_traceback: bool = log_traceback
         self.__override_name: typing.Optional[str] = override_name
         self.__name: str = ""
-        self.__owner: typing.Optional[type] = None
+        self.__owner: typing.Optional[typing.Type[_OwnerT]] = None
 
-    def __set_name__(self, owner: typing.Optional[type], name: str) -> None:
-        """Set __name__ and __objclass__ property."""
+    def __set_name__(self, owner: typing.Optional[typing.Type[_OwnerT]], name: str) -> None:
+        """Set __name__ and __objclass__ property.
+
+        :param owner: owner class, where descriptor applied
+        :type owner: typing.Optional[type]
+        :param name: descriptor name
+        :type name: str
+        """
         self.__owner = owner
         self.__name = name
 
     @property
-    def __objclass__(self) -> typing.Optional[type]:  # pragma: no cover
+    def __objclass__(self) -> typing.Optional[typing.Type[_OwnerT]]:  # pragma: no cover
         """Read-only owner.
 
         :return: property owner class
@@ -215,7 +226,7 @@ class LogOnAccess(property):
         tb_text = "\nTraceback (most recent call last):\n" + "".join(traceback.format_list(full_tb)) + "".join(exc_line)
         return tb_text
 
-    def __get_obj_source(self, instance: typing.Any, owner: typing.Optional[type] = None) -> str:
+    def __get_obj_source(self, instance: _OwnerT, owner: typing.Optional[typing.Type[_OwnerT]] = None) -> str:
         """Get object repr block.
 
         :param instance: object instance
@@ -233,7 +244,7 @@ class LogOnAccess(property):
             return f"<{self.__objclass__.__name__}() at 0x{id(instance):X}>"
         return f"<{instance.__class__.__name__}() at 0x{id(instance):X}>"
 
-    def _get_logger_for_instance(self, instance: typing.Any) -> logging.Logger:
+    def _get_logger_for_instance(self, instance: _OwnerT) -> logging.Logger:
         """Get logger for log calls.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
@@ -241,16 +252,25 @@ class LogOnAccess(property):
         :return: logger instance
         :rtype: logging.Logger
         """
-        if self.logger is not None:  # pylint: disable=no-else-return
+        if self.logger is not None:
             return self.logger
-        elif hasattr(instance, "logger") and isinstance(instance.logger, logging.Logger):
-            return instance.logger
-        elif hasattr(instance, "log") and isinstance(instance.log, logging.Logger):
-            return instance.log
+        for logger_name in VALID_LOGGER_NAMES:
+            logger_candidate = getattr(instance, logger_name, None)
+            if isinstance(logger_candidate, logging.Logger):
+                return logger_candidate
+        instance_module = inspect.getmodule(instance)
+        for logger_name in VALID_LOGGER_NAMES:
+            logger_candidate = getattr(instance_module, logger_name, None)
+            if isinstance(logger_candidate, logging.Logger):
+                return logger_candidate
         return _LOGGER
 
     @typing.overload
-    def __get__(self, instance: None, owner: typing.Optional[type] = None) -> typing.NoReturn:
+    def __get__(
+        self,
+        instance: None,
+        owner: typing.Optional[typing.Type[_OwnerT]] = None,
+    ) -> typing.NoReturn:
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
@@ -263,7 +283,11 @@ class LogOnAccess(property):
         """
 
     @typing.overload
-    def __get__(self, instance: typing.Any, owner: typing.Optional[type] = None) -> typing.Any:  # noqa: F811
+    def __get__(
+        self,
+        instance: _OwnerT,
+        owner: typing.Optional[typing.Type[_OwnerT]] = None,
+    ) -> _ReturnT:  # noqa: F811
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
@@ -275,7 +299,11 @@ class LogOnAccess(property):
         :raises Exception: Something goes wrong
         """
 
-    def __get__(self, instance: typing.Any, owner: typing.Optional[type] = None) -> typing.Any:  # noqa: F811
+    def __get__(
+        self,
+        instance: typing.Optional[_OwnerT],
+        owner: typing.Optional[typing.Type[_OwnerT]] = None,
+    ) -> _ReturnT:  # noqa: F811
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
@@ -296,13 +324,13 @@ class LogOnAccess(property):
             result = super().__get__(instance, owner)
             if self.log_success:
                 logger.log(self.log_level, f"{source}.{self.__name__} -> {result!r}")
-            return result
+            return result  # type: ignore
         except Exception:
             if self.log_failure:
                 logger.log(self.exc_level, f"Failed: {source}.{self.__name__}{self.__traceback}", exc_info=False)
             raise
 
-    def __set__(self, instance: typing.Any, value: typing.Any) -> None:
+    def __set__(self, instance: _OwnerT, value: _ReturnT) -> None:
         """Set descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
@@ -328,7 +356,7 @@ class LogOnAccess(property):
                 )
             raise
 
-    def __delete__(self, instance: typing.Any) -> None:
+    def __delete__(self, instance: _OwnerT) -> None:
         """Delete descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.

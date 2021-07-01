@@ -1,10 +1,10 @@
-#    Copyright 2016 - 2020 Alexey Stepanov aka penguinolog
+#    Copyright 2016 - 2021 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
-#
+
 #         http://www.apache.org/licenses/LICENSE-2.0
-#
+
 #    Unless required by applicable law or agreed to in writing, software
 #    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -13,13 +13,12 @@
 
 """Advanced descriptors for special cases."""
 
+from __future__ import annotations
+
 # Standard Library
 import ast
-import distutils.errors
 import os.path
-import shutil
 import sys
-from distutils.command import build_ext
 
 # External Dependencies
 import setuptools
@@ -44,86 +43,10 @@ with open("README.rst") as f:
     LONG_DESCRIPTION = f.read()
 
 
-def _extension(modpath):
-    """Make setuptools.Extension."""
-    return setuptools.Extension(modpath, [modpath.replace(".", "/") + ".py"])
-
-
-REQUIRES_OPTIMIZATION = [
-    _extension("advanced_descriptors.separate_class_method"),
-    _extension("advanced_descriptors.advanced_property"),
-    _extension("advanced_descriptors.log_on_access"),
-]
-
-if "win32" != sys.platform:
-    REQUIRES_OPTIMIZATION.append(_extension("advanced_descriptors.__init__"))
-
-# noinspection PyCallingNonCallable
-EXT_MODULES = (
-    cythonize(
-        REQUIRES_OPTIMIZATION,
-        compiler_directives=dict(
-            always_allow_keywords=True, binding=True, embedsignature=True, overflowcheck=True, language_level=3
-        ),
-    )
-    if cythonize is not None
-    else []
-)
-
-
-class BuildFailed(Exception):
-    """For install clear scripts."""
-
-
-class AllowFailRepair(build_ext.build_ext):
-    """This class allows C extension building to fail and repairs init."""
-
-    def run(self):
-        """Run.
-
-        :raises BuildFailed: Build is failed and clean python code should be used.
-        """
-        try:
-            build_ext.build_ext.run(self)
-
-            # Copy __init__.py back to repair package.
-            build_dir = os.path.abspath(self.build_lib)
-            root_dir = os.path.abspath(os.path.join(__file__, ".."))
-            target_dir = build_dir if not self.inplace else root_dir
-
-            src_file = os.path.join(PACKAGE_NAME, "__init__.py")
-
-            src = os.path.join(root_dir, src_file)
-            dst = os.path.join(target_dir, src_file)
-
-            if src != dst:
-                shutil.copyfile(src, dst)
-        except (
-            distutils.errors.DistutilsPlatformError,
-            FileNotFoundError,
-        ):
-            raise BuildFailed()
-
-    def build_extension(self, ext):
-        """build_extension.
-
-        :raises BuildFailed: Build is failed and clean python code should be used.
-        """
-        try:
-            build_ext.build_ext.build_extension(self, ext)
-        except (
-            distutils.errors.CCompilerError,
-            distutils.errors.DistutilsExecError,
-            distutils.errors.DistutilsPlatformError,
-            ValueError,
-        ):
-            raise BuildFailed()
-
-
 # noinspection PyUnresolvedReferences
 def get_simple_vars_from_src(
-    src: str
-) -> "typing.Dict[str, typing.Union[str, bytes, int, float, complex, list, set, dict, tuple, None, bool, Ellipsis]]":
+    src: str,
+) -> typing.Dict[str, typing.Union[str, bytes, int, float, complex, list, set, dict, tuple, None, bool, Ellipsis]]:
     """Get simple (string/number/boolean and None) assigned values from source.
 
     :param src: Source code
@@ -176,15 +99,19 @@ def get_simple_vars_from_src(
     result = {}
 
     for node in ast.iter_child_nodes(tree):
-        if not isinstance(node, ast.Assign) or not isinstance(node.value, ast_data):  # We parse assigns only
+        # We parse assigns only
+        if not isinstance(node, (ast.Assign, ast.AnnAssign)) or not isinstance(node.value, ast_data):
             continue
         try:
             value = ast.literal_eval(node.value)
         except ValueError:
             continue
-        for tgt in node.targets:
-            if isinstance(tgt, ast.Name) and isinstance(tgt.ctx, ast.Store):
-                result[tgt.id] = value
+        if isinstance(node, ast.Assign):
+            for tgt in node.targets:
+                if isinstance(tgt, ast.Name) and isinstance(tgt.ctx, ast.Store):
+                    result[tgt.id] = value
+        else:
+            result[node.target.id] = value
     return result
 
 
@@ -196,17 +123,18 @@ CLASSIFIERS = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
 KEYWORDS = ["descriptor", "property", "classmethod", "development"]
 
-SETUP_ARGS = dict(
+setuptools.setup(
     name="advanced-descriptors",
     author=VARIABLES["__author__"],
     author_email=VARIABLES["__author_email__"],
@@ -219,7 +147,7 @@ SETUP_ARGS = dict(
     long_description=LONG_DESCRIPTION,
     classifiers=CLASSIFIERS,
     keywords=KEYWORDS,
-    python_requires=">=3.6.0",
+    python_requires=">=3.7.0",
     # While setuptools cannot deal with pre-installed incompatible versions,
     # setting a lower bound is not harmful - it makes error messages cleaner. DO
     # NOT set an upper bound on setuptools, as that will lead to uninstallable
@@ -233,18 +161,7 @@ SETUP_ARGS = dict(
         "wheel",
         "setuptools_scm[toml]>=3.4",
     ],
-    use_scm_version={"write_to": f'{PACKAGE_NAME}/_version.py'},
+    use_scm_version={"write_to": f"{PACKAGE_NAME}/_version.py"},
     install_requires=REQUIRED,
     package_data={PACKAGE_NAME: ["py.typed"]},
 )
-if cythonize is not None:
-    SETUP_ARGS["ext_modules"] = EXT_MODULES
-    SETUP_ARGS["cmdclass"] = dict(build_ext=AllowFailRepair)
-
-try:
-    setuptools.setup(**SETUP_ARGS)
-except BuildFailed:
-    print("*" * 80 + "\n" "* Build Failed!\n" "* Use clear scripts version.\n" "*" * 80 + "\n")
-    del SETUP_ARGS["ext_modules"]
-    del SETUP_ARGS["cmdclass"]
-    setuptools.setup(**SETUP_ARGS)
