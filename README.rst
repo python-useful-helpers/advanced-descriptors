@@ -1,12 +1,8 @@
 Advanced descriptors
 ====================
 
-.. image:: https://travis-ci.com/python-useful-helpers/advanced-descriptors.svg?branch=master
-    :target: https://travis-ci.com/python-useful-helpers/advanced-descriptors
 .. image:: https://github.com/python-useful-helpers/advanced-descriptors/workflows/Python%20package/badge.svg
     :target: https://github.com/python-useful-helpers/advanced-descriptors/actions
-.. image:: https://coveralls.io/repos/github/python-useful-helpers/advanced-descriptors/badge.svg?branch=master
-    :target: https://coveralls.io/github/python-useful-helpers/advanced-descriptors?branch=master
 .. image:: https://readthedocs.org/projects/advanced-descriptors/badge/?version=latest
     :target: http://advanced-descriptors.readthedocs.io/
     :alt: Documentation Status
@@ -206,13 +202,6 @@ Available environments can be collected via `tox -l`
 
 CI systems
 ==========
-For code checking several CI systems is used in parallel:
+For CI/CD GitHub actions is used:
 
-1. `Travis CI: <https://travis-ci.com/python-useful-helpers/advanced-descriptors>`_ is used for checking: PEP8, pylint, bandit, installation possibility and unit tests. Also it's publishes coverage on coveralls.
-
-2. `GitHub actions: <https://github.com/python-useful-helpers/advanced-descriptors/actions>`_ is used for checking: PEP8, pylint, bandit, installation possibility and unit tests.
-3. `coveralls: <https://coveralls.io/github/python-useful-helpers/advanced-descriptors>`_ is used for coverage display.
-
-CD system
-=========
-`Travis CI: <https://travis-ci.com/python-useful-helpers/advanced-descriptors>`_ is used for package delivery on PyPI.
+`GitHub actions: <https://github.com/python-useful-helpers/advanced-descriptors/actions>`_ is used for checking: PEP8, pylint, bandit, installation possibility and unit tests.
