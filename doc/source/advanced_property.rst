@@ -16,13 +16,13 @@ API: AdvancedProperty
     .. py:method:: __init__(fget=None, fset=None, fdel=None, fcget=None, )
 
         :param fget: normal getter.
-        :type fget: ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+        :type fget: ``typing.Callable[[_OwnerClassT], _ReturnT] | None``
         :param fset: normal setter.
-        :type fset: ``typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]``
+        :type fset: ``typing.Callable[[_OwnerClassT, _ReturnT], None] | None``
         :param fdel: normal deleter.
-        :type fdel: ``typing.Optional[typing.Callable[[typing.Any, ], None]]``
+        :type fdel: ``typing.Callable[[_OwnerClassT], None] | None``
         :param fcget: class getter. Used as normal, if normal is None.
-        :type fcget: ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+        :type fcget: ``typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None``
 
     .. note:: doc argument is not supported due to class wide getter usage.
 
@@ -31,7 +31,7 @@ API: AdvancedProperty
         Descriptor to change the getter on a property.
 
         :param fget: new normal getter.
-        :type fget: ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+        :type fget: ``typing.Callable[[_OwnerClassT], _ReturnT] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:method:: setter(fset)
@@ -39,7 +39,7 @@ API: AdvancedProperty
         Descriptor to change the setter on a property.
 
         :param fset: new setter.
-        :type fset: ``typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]``
+        :type fset: ``typing.Callable[[_OwnerClassT, _ReturnT], None] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:method:: deleter(fdel)
@@ -47,7 +47,7 @@ API: AdvancedProperty
         Descriptor to change the deleter on a property.
 
         :param fdel: New deleter.
-        :type fdel: ``typing.Optional[typing.Callable[[typing.Any, ], None]]``
+        :type fdel: ``typing.Callable[[_OwnerClassT], None] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:method:: cgetter(fcget)
@@ -55,25 +55,25 @@ API: AdvancedProperty
         Descriptor to change the class wide getter on a property.
 
         :param fcget: new class-wide getter.
-        :type fcget: ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+        :type fcget: ``typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:attribute:: fget
 
-        ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+        ``typing.Callable[[_OwnerClassT], _ReturnT] | None``
         Getter instance.
 
     .. py:attribute:: fset
 
-        ``typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]``
+        ``typing.Callable[[_OwnerClassT, _ReturnT], None] | None``
         Setter instance.
 
     .. py:attribute:: fdel
 
-        ``typing.Optional[typing.Callable[[typing.Any, ], None]]``
+        ``typing.Callable[[_OwnerClassT], None] | None``
         Deleter instance.
 
     .. py:attribute:: fcget
 
-        ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+        ``typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None``
         Class wide getter instance.

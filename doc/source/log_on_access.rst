@@ -17,36 +17,36 @@ API: LogOnAccess
     .. py:method:: __init__(fget=None, fset=None, fdel=None, doc=None, *, logger=None, log_object_repr=True, log_level=logging.DEBUG, exc_level=logging.DEBUG, log_success=True, log_failure=True, log_traceback=True, override_name=None)
 
         :param fget: normal getter.
-        :type fget: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
+        :type fget: ``typing.Callable[[_OwnerT], _ReturnT] | None``
         :param fset: normal setter.
-        :type fset: typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]
+        :type fset: ``typing.Callable[[_OwnerT, _ReturnT], None] | None``
         :param fdel: normal deleter.
-        :type fdel: typing.Optional[typing.Callable[[typing.Any, ], None]]
+        :type fdel: ``typing.Callable[[_OwnerT], None] | None``
         :param doc: docstring override
-        :type doc: typing.Optional[str]
+        :type doc: ``str | None``
         :param logger: logger instance or name to use as override
-        :type logger: typing.Optional[typing.Union[logging.Logger, str]]
+        :type logger: ``logging.Logger | str | None``
         :param log_object_repr: use `repr` over object to describe owner if True else owner class name and id
-        :type log_object_repr: bool
+        :type log_object_repr: ``bool``
         :param log_level: log level for successful operations
-        :type log_level: int
+        :type log_level: ``int``
         :param exc_level: log level for exceptions
-        :type exc_level: int
+        :type exc_level: ``int``
         :param log_success: log successful operations
-        :type log_success: bool
+        :type log_success: ``bool``
         :param log_failure: log exceptions
-        :type log_failure: bool
+        :type log_failure: ``bool``
         :param log_traceback: Log traceback on exceptions
-        :type log_traceback: bool
+        :type log_traceback: ``bool``
         :param override_name: override property name if not None else use getter/setter/deleter name
-        :type override_name: typing.Optional[str]
+        :type override_name: ``str | None``
 
     .. py:method:: getter(fget)
 
         Descriptor to change the getter on a property.
 
         :param fget: new normal getter.
-        :type fget: ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+        :type fget: ``typing.Callable[[_OwnerT], _ReturnT] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:method:: setter(fset)
@@ -54,7 +54,7 @@ API: LogOnAccess
         Descriptor to change the setter on a property.
 
         :param fset: new setter.
-        :type fset: ``typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]``
+        :type fset: ``typing.Callable[[_OwnerT, _ReturnT], None] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:method:: deleter(fdel)
@@ -62,22 +62,22 @@ API: LogOnAccess
         Descriptor to change the deleter on a property.
 
         :param fdel: New deleter.
-        :type fdel: ``typing.Optional[typing.Callable[[typing.Any, ], None]]``
+        :type fdel: ``typing.Callable[[_OwnerT], None] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:attribute:: fget
 
-        ``typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]``
+        ``typing.Callable[[_OwnerT], _ReturnT] | None``
         Getter instance.
 
     .. py:attribute:: fset
 
-        ``typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]``
+        ``typing.Callable[[_OwnerT, _ReturnT], None] | None``
         Setter instance.
 
     .. py:attribute:: fdel
 
-        ``typing.Optional[typing.Callable[[typing.Any, ], None]]``
+        ``typing.Callable[[_OwnerT], None] | None``
         Deleter instance.
 
     .. py:attribute:: logger
@@ -117,5 +117,5 @@ API: LogOnAccess
 
     .. py:attribute:: override_name
 
-        ``typing.Optional[str]``
+        ``str | None``
         Override property name if not None else use getter/setter/deleter name.

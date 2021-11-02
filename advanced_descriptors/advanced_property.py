@@ -121,41 +121,41 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
 
     def __init__(
         self,
-        fget: typing.Optional[typing.Callable[[_OwnerClassT], _ReturnT]] = None,
-        fset: typing.Optional[typing.Callable[[_OwnerClassT, _ReturnT], None]] = None,
-        fdel: typing.Optional[typing.Callable[[_OwnerClassT], None]] = None,
-        fcget: typing.Optional[typing.Callable[[typing.Type[_OwnerClassT]], _ClassReturnT]] = None,
+        fget: typing.Callable[[_OwnerClassT], _ReturnT] | None = None,
+        fset: typing.Callable[[_OwnerClassT, _ReturnT], None] | None = None,
+        fdel: typing.Callable[[_OwnerClassT], None] | None = None,
+        fcget: typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None = None,
     ) -> None:
         """Advanced property main entry point.
 
         :param fget: normal getter.
-        :type fget: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
+        :type fget: typing.Callable[[typing.Any, ], typing.Any] | None
         :param fset: normal setter.
-        :type fset: typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]
+        :type fset: typing.Callable[[typing.Any, typing.Any], None] | None
         :param fdel: normal deleter.
-        :type fdel: typing.Optional[typing.Callable[[typing.Any, ], None]]
+        :type fdel: typing.Callable[[typing.Any, ], None] | None
         :param fcget: class getter. Used as normal, if normal is None.
-        :type fcget: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
+        :type fcget: typing.Callable[[typing.Any, ], typing.Any] | None
 
         .. note:: doc argument is not supported due to class wide getter usage.
         """
         super().__init__(fget=fget, fset=fset, fdel=fdel)
 
-        self.__fcget: typing.Optional[typing.Callable[[typing.Type[_OwnerClassT]], _ClassReturnT]] = fcget
+        self.__fcget: typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None = fcget
 
     @typing.overload
-    def __get__(self, instance: None, owner: typing.Type[_OwnerClassT]) -> _ClassReturnT:
+    def __get__(self, instance: None, owner: type[_OwnerClassT]) -> _ClassReturnT:
         """Class method."""
 
     @typing.overload
-    def __get__(self, instance: _OwnerClassT, owner: typing.Optional[typing.Type[_OwnerClassT]] = None) -> _ReturnT:
+    def __get__(self, instance: _OwnerClassT, owner: type[_OwnerClassT] | None = None) -> _ReturnT:
         """Normal method."""
 
     def __get__(
         self,
-        instance: typing.Optional[_OwnerClassT],
-        owner: typing.Optional[typing.Type[_OwnerClassT]] = None,
-    ) -> typing.Union[_ClassReturnT, _ReturnT]:
+        instance: _OwnerClassT | None,
+        owner: type[_OwnerClassT] | None = None,
+    ) -> _ClassReturnT | _ReturnT:
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
@@ -169,25 +169,25 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
             if self.__fcget is None:
                 raise AttributeError()
             return self.__fcget(owner)
-        return super().__get__(instance, owner)  # type: ignore
+        return super().__get__(instance, owner)  # type: ignore[no-any-return]
 
     @property
-    def fcget(self) -> typing.Optional[typing.Callable[[typing.Type[_OwnerClassT]], _ClassReturnT]]:
+    def fcget(self) -> typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None:
         """Class wide getter instance.
 
         :return: Class wide getter instance
-        :rtype: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
+        :rtype: typing.Callable[[typing.Any, ], typing.Any] | None
         """
         return self.__fcget
 
     def cgetter(
         self,
-        fcget: typing.Optional[typing.Callable[[typing.Type[_OwnerClassT]], _ClassReturnT]],
+        fcget: typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None,
     ) -> AdvancedProperty[_OwnerClassT, _ReturnT, _ClassReturnT]:
         """Descriptor to change the class wide getter on a property.
 
         :param fcget: new class-wide getter.
-        :type fcget: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
+        :type fcget: typing.Callable[[typing.Any, ], typing.Any] | None
         :return: AdvancedProperty
         :rtype: AdvancedProperty
         """

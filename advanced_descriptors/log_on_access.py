@@ -15,6 +15,8 @@
 
 """Property with logging on successful get/set/delete or failure."""
 
+from __future__ import annotations
+
 __all__ = ("LogOnAccess",)
 
 # Standard Library
@@ -43,33 +45,33 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
 
     def __init__(
         self,
-        fget: typing.Optional[typing.Callable[[_OwnerT], _ReturnT]] = None,
-        fset: typing.Optional[typing.Callable[[_OwnerT, _ReturnT], None]] = None,
-        fdel: typing.Optional[typing.Callable[[_OwnerT], None]] = None,
-        doc: typing.Optional[str] = None,
+        fget: typing.Callable[[_OwnerT], _ReturnT] | None = None,
+        fset: typing.Callable[[_OwnerT, _ReturnT], None] | None = None,
+        fdel: typing.Callable[[_OwnerT], None] | None = None,
+        doc: str | None = None,
         *,
         # Extended settings start
-        logger: typing.Optional[typing.Union[logging.Logger, str]] = None,
+        logger: logging.Logger | str | None = None,
         log_object_repr: bool = True,
         log_level: int = logging.DEBUG,
         exc_level: int = logging.DEBUG,
         log_success: bool = True,
         log_failure: bool = True,
         log_traceback: bool = True,
-        override_name: typing.Optional[str] = None,
+        override_name: str | None = None,
     ) -> None:
         """Advanced property main entry point.
 
         :param fget: normal getter.
-        :type fget: typing.Optional[typing.Callable[[typing.Any, ], typing.Any]]
+        :type fget: typing.Callable[[_OwnerT], _ReturnT] | None
         :param fset: normal setter.
-        :type fset: typing.Optional[typing.Callable[[typing.Any, typing.Any], None]]
+        :type fset: typing.Callable[[_OwnerT, _ReturnT], None] | None
         :param fdel: normal deleter.
-        :type fdel: typing.Optional[typing.Callable[[typing.Any, ], None]]
+        :type fdel: typing.Callable[[_OwnerT], None] | None
         :param doc: docstring override
-        :type doc: typing.Optional[str]
+        :type doc: str | None
         :param logger: logger instance or name to use as override
-        :type logger: typing.Optional[typing.Union[logging.Logger, str]]
+        :type logger: logging.Logger | str | None
         :param log_object_repr: use `repr` over object to describe owner if True else owner class name and id
         :type log_object_repr: bool
         :param log_level: log level for successful operations
@@ -83,7 +85,7 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         :param log_traceback: Log traceback on exceptions
         :type log_traceback: bool
         :param override_name: override property name if not None else use getter/setter/deleter name
-        :type override_name: typing.Optional[str]
+        :type override_name: str | None
 
         Usage examples:
 
@@ -175,7 +177,7 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         super().__init__(fget=fget, fset=fset, fdel=fdel, doc=doc)
 
         if logger is None or isinstance(logger, logging.Logger):
-            self.__logger: typing.Optional[logging.Logger] = logger
+            self.__logger: logging.Logger | None = logger
         else:
             self.__logger = logging.getLogger(logger)
 
@@ -185,15 +187,15 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         self.__log_success: bool = log_success
         self.__log_failure: bool = log_failure
         self.__log_traceback: bool = log_traceback
-        self.__override_name: typing.Optional[str] = override_name
+        self.__override_name: str | None = override_name
         self.__name: str = ""
-        self.__owner: typing.Optional[typing.Type[_OwnerT]] = None
+        self.__owner: type[_OwnerT] | None = None
 
-    def __set_name__(self, owner: typing.Optional[typing.Type[_OwnerT]], name: str) -> None:
+    def __set_name__(self, owner: type[_OwnerT] | None, name: str) -> None:
         """Set __name__ and __objclass__ property.
 
         :param owner: owner class, where descriptor applied
-        :type owner: typing.Optional[type]
+        :type owner: type[_OwnerT] | None
         :param name: descriptor name
         :type name: str
         """
@@ -201,11 +203,11 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         self.__name = name
 
     @property
-    def __objclass__(self) -> typing.Optional[typing.Type[_OwnerT]]:  # pragma: no cover
+    def __objclass__(self) -> type[_OwnerT] | None:  # pragma: no cover
         """Read-only owner.
 
         :return: property owner class
-        :rtype: typing.Optional[type]
+        :rtype: type[_OwnerT] | None
         """
         return self.__owner
 
@@ -220,19 +222,19 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
             return ""
         exc_info = sys.exc_info()
         stack: traceback.StackSummary = traceback.extract_stack()
-        full_tb: typing.List[traceback.FrameSummary] = [elem for elem in stack if elem.filename != _CURRENT_FILE]
-        exc_line: typing.List[str] = traceback.format_exception_only(*exc_info[:2])
+        full_tb: list[traceback.FrameSummary] = [elem for elem in stack if elem.filename != _CURRENT_FILE]
+        exc_line: list[str] = traceback.format_exception_only(*exc_info[:2])
         # Make standard traceback string
         tb_text = "\nTraceback (most recent call last):\n" + "".join(traceback.format_list(full_tb)) + "".join(exc_line)
         return tb_text
 
-    def __get_obj_source(self, instance: _OwnerT, owner: typing.Optional[typing.Type[_OwnerT]] = None) -> str:
+    def __get_obj_source(self, instance: _OwnerT, owner: type[_OwnerT] | None = None) -> str:
         """Get object repr block.
 
         :param instance: object instance
-        :type instance: typing.Any
+        :type instance: _OwnerT
         :param owner: object class (available for getter usage only)
-        :type owner: typing.Optional[type]
+        :type owner: type[_OwnerT] | None
         :return: repr of object if it not disabled else repr placeholder
         :rtype: str
         """
@@ -248,7 +250,7 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         """Get logger for log calls.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
-        :type instance: typing.Optional[owner]
+        :type instance: _OwnerT
         :return: logger instance
         :rtype: logging.Logger
         """
@@ -269,13 +271,14 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
     def __get__(
         self,
         instance: None,
-        owner: typing.Optional[typing.Type[_OwnerT]] = None,
+        owner: type[_OwnerT] | None = None,
     ) -> typing.NoReturn:
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
-        :type instance: typing.Optional[owner]
+        :type instance: None
         :param owner: Owner class for property.
+        :type owner: type[_OwnerT] | None
         :return: getter call result if getter presents
         :rtype: typing.Any
         :raises AttributeError: Getter is not available
@@ -286,13 +289,14 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
     def __get__(
         self,
         instance: _OwnerT,
-        owner: typing.Optional[typing.Type[_OwnerT]] = None,
+        owner: type[_OwnerT] | None = None,
     ) -> _ReturnT:  # noqa: F811
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
-        :type instance: typing.Optional[owner]
+        :type instance: _OwnerT
         :param owner: Owner class for property.
+        :type owner: type[_OwnerT] | None
         :return: getter call result if getter presents
         :rtype: typing.Any
         :raises AttributeError: Getter is not available
@@ -301,14 +305,15 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
 
     def __get__(
         self,
-        instance: typing.Optional[_OwnerT],
-        owner: typing.Optional[typing.Type[_OwnerT]] = None,
+        instance: _OwnerT | None,
+        owner: type[_OwnerT] | None = None,
     ) -> _ReturnT:  # noqa: F811
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
-        :type instance: typing.Optional[owner]
+        :type instance: _OwnerT | None
         :param owner: Owner class for property.
+        :type owner: type[_OwnerT] | None
         :return: getter call result if getter presents
         :rtype: typing.Any
         :raises AttributeError: Getter is not available
@@ -324,7 +329,7 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
             result = super().__get__(instance, owner)
             if self.log_success:
                 logger.log(self.log_level, f"{source}.{self.__name__} -> {result!r}")
-            return result  # type: ignore
+            return result  # type: ignore[no-any-return]
         except Exception:
             if self.log_failure:
                 logger.log(self.exc_level, f"Failed: {source}.{self.__name__}{self.__traceback}", exc_info=False)
@@ -334,7 +339,7 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         """Set descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
-        :type instance: typing.Optional
+        :type instance: _OwnerT
         :param value: Value for setter
         :raises AttributeError: Setter is not available
         :raises Exception: Something goes wrong
@@ -360,7 +365,7 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         """Delete descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
-        :type instance: typing.Optional
+        :type instance: _OwnerT
         :raises AttributeError: Deleter is not available
         :raises Exception: Something goes wrong
         """
@@ -380,20 +385,20 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
             raise
 
     @property
-    def logger(self) -> typing.Optional[logging.Logger]:
+    def logger(self) -> logging.Logger | None:
         """Logger instance to use as override.
 
         :return: logger instance if set
-        :rtype: typing.Optional[logging.Logger]
+        :rtype: logging.Logger | None
         """
         return self.__logger
 
     @logger.setter
-    def logger(self, logger: typing.Union[logging.Logger, str, None]) -> None:
+    def logger(self, logger: logging.Logger | str | None) -> None:
         """Logger instance to use as override.
 
         :param logger: logger instance, logger name or None if override disable required
-        :type logger: typing.Union[logging.Logger, str, None]
+        :type logger: logging.Logger | str | None
         """
         if logger is None or isinstance(logger, logging.Logger):
             self.__logger = logger
@@ -509,20 +514,20 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         self.__log_traceback = value
 
     @property
-    def override_name(self) -> typing.Optional[str]:
+    def override_name(self) -> str | None:
         """Override property name if not None else use getter/setter/deleter name.
 
         :return: property name override
-        :rtype: typing.Optional[str]
+        :rtype: str | None
         """
         return self.__override_name
 
     @override_name.setter
-    def override_name(self, name: typing.Optional[str]) -> None:
+    def override_name(self, name: str | None) -> None:
         """Override property name if not None else use getter/setter/deleter name.
 
         :param name: property name override
-        :type name: typing.Optional[str]
+        :type name: str | None
         """
         self.__override_name = name
 

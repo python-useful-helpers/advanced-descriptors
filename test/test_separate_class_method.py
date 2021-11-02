@@ -2,8 +2,10 @@
 
 """Tests for SeparateClassMethod."""
 
+# Standard Library
 import unittest
 
+# Package Implementation
 import advanced_descriptors
 
 

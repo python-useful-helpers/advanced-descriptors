@@ -2,10 +2,12 @@
 
 """Tests for LogOnAccess descriptor."""
 
+# Standard Library
 import io
 import logging
 import unittest
 
+# Package Implementation
 import advanced_descriptors
 
 

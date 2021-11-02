@@ -22,14 +22,6 @@ import sys
 
 # External Dependencies
 import setuptools
-import typing
-
-
-try:
-    # noinspection PyPackageRequirements
-    from Cython.Build import cythonize
-except ImportError:
-    cythonize = None
 
 PACKAGE_NAME = "advanced_descriptors"
 
@@ -46,7 +38,7 @@ with open("README.rst") as f:
 # noinspection PyUnresolvedReferences
 def get_simple_vars_from_src(
     src: str,
-) -> typing.Dict[str, typing.Union[str, bytes, int, float, complex, list, set, dict, tuple, None, bool, Ellipsis]]:
+) -> dict[str, str | bytes | int | float | complex | list | set | dict | tuple | None | bool | Ellipsis]:
     """Get simple (string/number/boolean and None) assigned values from source.
 
     :param src: Source code
@@ -138,9 +130,7 @@ setuptools.setup(
     name="advanced-descriptors",
     author=VARIABLES["__author__"],
     author_email=VARIABLES["__author_email__"],
-    maintainer=", ".join(
-        "{name} <{email}>".format(name=name, email=email) for name, email in VARIABLES["__maintainers__"].items()
-    ),
+    maintainer=", ".join(f"{name} <{email}>" for name, email in VARIABLES["__maintainers__"].items()),
     url=VARIABLES["__url__"],
     license=VARIABLES["__license__"],
     description=VARIABLES["__description__"],
