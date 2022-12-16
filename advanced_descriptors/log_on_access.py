@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#    Copyright 2016 - 2021 Alexey Stepanov aka penguinolog
+#    Copyright 2016 - 2022 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -28,6 +28,10 @@ import traceback
 import typing
 import warnings
 
+if typing.TYPE_CHECKING:
+    # Standard Library
+    from collections.abc import Callable
+
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 _CURRENT_FILE = os.path.abspath(__file__)
 _OwnerT = typing.TypeVar("_OwnerT")
@@ -45,9 +49,9 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
 
     def __init__(
         self,
-        fget: typing.Callable[[_OwnerT], _ReturnT] | None = None,
-        fset: typing.Callable[[_OwnerT, _ReturnT], None] | None = None,
-        fdel: typing.Callable[[_OwnerT], None] | None = None,
+        fget: Callable[[_OwnerT], _ReturnT] | None = None,
+        fset: Callable[[_OwnerT, _ReturnT], None] | None = None,
+        fdel: Callable[[_OwnerT], None] | None = None,
         doc: str | None = None,
         *,
         # Extended settings start
@@ -63,11 +67,11 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         """Advanced property main entry point.
 
         :param fget: normal getter.
-        :type fget: typing.Callable[[_OwnerT], _ReturnT] | None
+        :type fget: Callable[[_OwnerT], _ReturnT] | None
         :param fset: normal setter.
-        :type fset: typing.Callable[[_OwnerT, _ReturnT], None] | None
+        :type fset: Callable[[_OwnerT, _ReturnT], None] | None
         :param fdel: normal deleter.
-        :type fdel: typing.Callable[[_OwnerT], None] | None
+        :type fdel: Callable[[_OwnerT], None] | None
         :param doc: docstring override
         :type doc: str | None
         :param logger: logger instance or name to use as override

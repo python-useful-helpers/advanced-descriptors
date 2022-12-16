@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#    Copyright 2016 - 2021 Alexey Stepanov aka penguinolog
+#    Copyright 2016 - 2022 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -19,6 +19,10 @@ from __future__ import annotations
 
 # Standard Library
 import typing
+
+if typing.TYPE_CHECKING:
+    # Standard Library
+    from collections.abc import Callable
 
 __all__ = ("AdvancedProperty",)
 
@@ -121,27 +125,27 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
 
     def __init__(
         self,
-        fget: typing.Callable[[_OwnerClassT], _ReturnT] | None = None,
-        fset: typing.Callable[[_OwnerClassT, _ReturnT], None] | None = None,
-        fdel: typing.Callable[[_OwnerClassT], None] | None = None,
-        fcget: typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None = None,
+        fget: Callable[[_OwnerClassT], _ReturnT] | None = None,
+        fset: Callable[[_OwnerClassT, _ReturnT], None] | None = None,
+        fdel: Callable[[_OwnerClassT], None] | None = None,
+        fcget: Callable[[type[_OwnerClassT]], _ClassReturnT] | None = None,
     ) -> None:
         """Advanced property main entry point.
 
         :param fget: normal getter.
-        :type fget: typing.Callable[[typing.Any, ], typing.Any] | None
+        :type fget: Callable[[typing.Any, ], typing.Any] | None
         :param fset: normal setter.
-        :type fset: typing.Callable[[typing.Any, typing.Any], None] | None
+        :type fset: Callable[[typing.Any, typing.Any], None] | None
         :param fdel: normal deleter.
-        :type fdel: typing.Callable[[typing.Any, ], None] | None
+        :type fdel: Callable[[typing.Any, ], None] | None
         :param fcget: class getter. Used as normal, if normal is None.
-        :type fcget: typing.Callable[[typing.Any, ], typing.Any] | None
+        :type fcget: Callable[[typing.Any, ], typing.Any] | None
 
         .. note:: doc argument is not supported due to class wide getter usage.
         """
         super().__init__(fget=fget, fset=fset, fdel=fdel)
 
-        self.__fcget: typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None = fcget
+        self.__fcget: Callable[[type[_OwnerClassT]], _ClassReturnT] | None = fcget
 
     @typing.overload
     def __get__(self, instance: None, owner: type[_OwnerClassT]) -> _ClassReturnT:
@@ -159,7 +163,7 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
         """Get descriptor.
 
         :param instance: Owner class instance. Filled only if instance created, else None.
-        :type instance: typing.Optional[owner]
+        :type instance: owner | None
         :param owner: Owner class for property.
         :return: getter call result if getter presents
         :rtype: typing.Any
@@ -172,22 +176,22 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
         return super().__get__(instance, owner)  # type: ignore[no-any-return]
 
     @property
-    def fcget(self) -> typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None:
+    def fcget(self) -> Callable[[type[_OwnerClassT]], _ClassReturnT] | None:
         """Class wide getter instance.
 
         :return: Class wide getter instance
-        :rtype: typing.Callable[[typing.Any, ], typing.Any] | None
+        :rtype: Callable[[typing.Any, ], typing.Any] | None
         """
         return self.__fcget
 
     def cgetter(
         self,
-        fcget: typing.Callable[[type[_OwnerClassT]], _ClassReturnT] | None,
+        fcget: Callable[[type[_OwnerClassT]], _ClassReturnT] | None,
     ) -> AdvancedProperty[_OwnerClassT, _ReturnT, _ClassReturnT]:
         """Descriptor to change the class wide getter on a property.
 
         :param fcget: new class-wide getter.
-        :type fcget: typing.Callable[[typing.Any, ], typing.Any] | None
+        :type fcget: Callable[[typing.Any, ], typing.Any] | None
         :return: AdvancedProperty
         :rtype: AdvancedProperty
         """

@@ -17,11 +17,11 @@ API: LogOnAccess
     .. py:method:: __init__(fget=None, fset=None, fdel=None, doc=None, *, logger=None, log_object_repr=True, log_level=logging.DEBUG, exc_level=logging.DEBUG, log_success=True, log_failure=True, log_traceback=True, override_name=None)
 
         :param fget: normal getter.
-        :type fget: ``typing.Callable[[_OwnerT], _ReturnT] | None``
+        :type fget: ``Callable[[_OwnerT], _ReturnT] | None``
         :param fset: normal setter.
-        :type fset: ``typing.Callable[[_OwnerT, _ReturnT], None] | None``
+        :type fset: ``Callable[[_OwnerT, _ReturnT], None] | None``
         :param fdel: normal deleter.
-        :type fdel: ``typing.Callable[[_OwnerT], None] | None``
+        :type fdel: ``Callable[[_OwnerT], None] | None``
         :param doc: docstring override
         :type doc: ``str | None``
         :param logger: logger instance or name to use as override
@@ -46,7 +46,7 @@ API: LogOnAccess
         Descriptor to change the getter on a property.
 
         :param fget: new normal getter.
-        :type fget: ``typing.Callable[[_OwnerT], _ReturnT] | None``
+        :type fget: ``Callable[[_OwnerT], _ReturnT] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:method:: setter(fset)
@@ -54,7 +54,7 @@ API: LogOnAccess
         Descriptor to change the setter on a property.
 
         :param fset: new setter.
-        :type fset: ``typing.Callable[[_OwnerT, _ReturnT], None] | None``
+        :type fset: ``Callable[[_OwnerT, _ReturnT], None] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:method:: deleter(fdel)
@@ -62,27 +62,27 @@ API: LogOnAccess
         Descriptor to change the deleter on a property.
 
         :param fdel: New deleter.
-        :type fdel: ``typing.Callable[[_OwnerT], None] | None``
+        :type fdel: ``Callable[[_OwnerT], None] | None``
         :rtype: ``AdvancedProperty``
 
     .. py:attribute:: fget
 
-        ``typing.Callable[[_OwnerT], _ReturnT] | None``
+        ``Callable[[_OwnerT], _ReturnT] | None``
         Getter instance.
 
     .. py:attribute:: fset
 
-        ``typing.Callable[[_OwnerT, _ReturnT], None] | None``
+        ``Callable[[_OwnerT, _ReturnT], None] | None``
         Setter instance.
 
     .. py:attribute:: fdel
 
-        ``typing.Callable[[_OwnerT], None] | None``
+        ``Callable[[_OwnerT], None] | None``
         Deleter instance.
 
     .. py:attribute:: logger
 
-        ``typing.Optional[logging.Logger]``
+        ``logging.Logger | None``
         Logger instance to use as override.
 
     .. py:attribute:: log_object_repr

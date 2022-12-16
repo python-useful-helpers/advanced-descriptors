@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#    Copyright 2017 - 2021 Alexey Stepanov aka penguinolog
+#    Copyright 2017 - 2022 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -20,6 +20,10 @@ from __future__ import annotations
 # Standard Library
 import functools
 import typing
+
+if typing.TYPE_CHECKING:
+    # Standard Library
+    from collections.abc import Callable
 
 __all__ = ("SeparateClassMethod",)
 
@@ -99,18 +103,18 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
 
     def __init__(
         self,
-        imeth: typing.Callable[..., _MethodReturnT] | None = None,
-        cmeth: typing.Callable[..., _ClassMethodReturnT] | None = None,
+        imeth: Callable[..., _MethodReturnT] | None = None,
+        cmeth: Callable[..., _ClassMethodReturnT] | None = None,
     ) -> None:
         """Separate class method and instance methods.
 
         :param imeth: Instance method
-        :type imeth: typing.Callable[..., _MethodReturnT] | None
+        :type imeth: Callable[..., _MethodReturnT] | None
         :param cmeth: Class method
-        :type cmeth: typing.Callable[..., _ClassMethodReturnT] | None
+        :type cmeth: Callable[..., _ClassMethodReturnT] | None
         """
-        self.__instance_method: typing.Callable[..., _MethodReturnT] | None = imeth
-        self.__class_method: typing.Callable[..., _ClassMethodReturnT] | None = cmeth
+        self.__instance_method: Callable[..., _MethodReturnT] | None = imeth
+        self.__class_method: Callable[..., _ClassMethodReturnT] | None = cmeth
         self.__owner: type | None = None
         self.__name: str = ""
 
@@ -120,22 +124,22 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
         self.__name = name
 
     @typing.overload
-    def __get__(self, instance: None, owner: typing.Any) -> typing.Callable[..., _ClassMethodReturnT]:
+    def __get__(self, instance: None, owner: typing.Any) -> Callable[..., _ClassMethodReturnT]:
         """Class method."""
 
     @typing.overload
-    def __get__(self, instance: typing.Any, owner: typing.Any) -> typing.Callable[..., _MethodReturnT]:
+    def __get__(self, instance: typing.Any, owner: typing.Any) -> Callable[..., _MethodReturnT]:
         """Normal method."""
 
     def __get__(
         self,
         instance: typing.Any | None,
         owner: typing.Any,
-    ) -> typing.Callable[..., _MethodReturnT | _ClassMethodReturnT]:
+    ) -> Callable[..., _MethodReturnT | _ClassMethodReturnT]:
         """Get descriptor.
 
         :return: class method or instance method depends on call behavior
-        :rtype: typing.Callable
+        :rtype: Callable
         :raises AttributeError: Not implemented getter for class method and called class context.
         """
         if instance is None or self.__instance_method is None:
@@ -184,12 +188,12 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
 
     def instance_method(
         self,
-        imeth: typing.Callable[..., _MethodReturnT] | None,
+        imeth: Callable[..., _MethodReturnT] | None,
     ) -> SeparateClassMethod[_MethodReturnT, _ClassMethodReturnT]:
         """Descriptor to change instance method.
 
         :param imeth: New instance method.
-        :type imeth: typing.Callable[..., _MethodReturnT] | None
+        :type imeth: Callable[..., _MethodReturnT] | None
         :return: SeparateClassMethod
         :rtype: SeparateClassMethod[_MethodReturnT, _ClassMethodReturnT]
         """
@@ -198,12 +202,12 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
 
     def class_method(
         self,
-        cmeth: typing.Callable[..., _ClassMethodReturnT] | None,
+        cmeth: Callable[..., _ClassMethodReturnT] | None,
     ) -> SeparateClassMethod[_MethodReturnT, _ClassMethodReturnT]:
         """Descriptor to change class method.
 
         :param cmeth: New class method.
-        :type cmeth: typing.Callable[..., _ClassMethodReturnT] | None
+        :type cmeth: Callable[..., _ClassMethodReturnT] | None
         :return: SeparateClassMethod
         :rtype: SeparateClassMethod[_MethodReturnT, _ClassMethodReturnT]
         """
@@ -211,18 +215,18 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
         return self
 
     @property
-    def imeth(self) -> typing.Callable[..., _MethodReturnT] | None:
+    def imeth(self) -> Callable[..., _MethodReturnT] | None:
         """Instance method instance.
 
-        :rtype: typing.Callable[..., _MethodReturnT] | None
+        :rtype: Callable[..., _MethodReturnT] | None
         """
         return self.__instance_method
 
     @property
-    def cmeth(self) -> typing.Callable[..., _ClassMethodReturnT] | None:
+    def cmeth(self) -> Callable[..., _ClassMethodReturnT] | None:
         """Class method instance.
 
-        :rtype: typing.Callable[..., _ClassMethodReturnT] | None
+        :rtype: Callable[..., _ClassMethodReturnT] | None
         """
         return self.__class_method
 

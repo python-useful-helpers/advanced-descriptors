@@ -73,7 +73,7 @@ class TestLogOnAccess(unittest.TestCase):
                 self.val = val
 
             def __repr__(self):
-                return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+                return f"{self.__class__.__name__}(val={self.val})"
 
             @advanced_descriptors.LogOnAccess
             def ok(self):
@@ -99,7 +99,7 @@ class TestLogOnAccess(unittest.TestCase):
                 self.val = val
 
             def __repr__(self):
-                return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+                return f"{self.__class__.__name__}(val={self.val})"
 
             @advanced_descriptors.LogOnAccess
             def ok(self):
@@ -170,7 +170,7 @@ class TestLogOnAccess(unittest.TestCase):
                 self.val = val
 
             def __repr__(self):
-                return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+                return f"{self.__class__.__name__}(val={self.val})"
 
             @advanced_descriptors.LogOnAccess
             def ok(self):
@@ -200,7 +200,7 @@ class TestLogOnAccess(unittest.TestCase):
                 self.val = val
 
             def __repr__(self):
-                return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+                return f"{self.__class__.__name__}(val={self.val})"
 
             @advanced_descriptors.LogOnAccess
             def ok(self):
@@ -293,7 +293,7 @@ class TestLogOnAccess(unittest.TestCase):
                 self.logger = logging.getLogger(self.__class__.__name__)
 
             def __repr__(self):
-                return "{cls}(val={self.val})".format(cls=self.__class__.__name__, self=self)
+                return f"{self.__class__.__name__}(val={self.val})"
 
             @advanced_descriptors.LogOnAccess
             def ok(self):

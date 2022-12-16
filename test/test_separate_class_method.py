@@ -15,7 +15,7 @@ class TestSeparateClassMethod(unittest.TestCase):
     def test_01_instance_method(self):
         """Test instance method support with decorating in-place."""
 
-        class Target(object):
+        class Target:
             def __init__(tself):
                 tself.value = 42
 
@@ -31,7 +31,7 @@ class TestSeparateClassMethod(unittest.TestCase):
     def test_02_alt_instance_method(self):
         """Test instance method support with late bind."""
 
-        class Target(object):
+        class Target:
             def __init__(tself):
                 tself.value = 42
 
@@ -49,7 +49,7 @@ class TestSeparateClassMethod(unittest.TestCase):
     def test_03_class_method(self):
         """Test class method support."""
 
-        class Target(object):
+        class Target:
             getcls = advanced_descriptors.SeparateClassMethod()
 
             @getcls.class_method
@@ -62,7 +62,7 @@ class TestSeparateClassMethod(unittest.TestCase):
     def test_04_both(self):
         """Test coexistency of class method and instance method."""
 
-        class Target(object):
+        class Target:
             value = 1
 
             def __init__(tself):
@@ -89,7 +89,7 @@ class TestSeparateClassMethod(unittest.TestCase):
         def cmeth(owner):
             return owner.value
 
-        class Target(object):
+        class Target:
             value = 1
 
             def __init__(tself):
