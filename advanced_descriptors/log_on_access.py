@@ -177,7 +177,11 @@ class LogOnAccess(property, typing.Generic[_OwnerT, _ReturnT]):
         >>> logs[27] == 'Traceback (most recent call last):'
         True
         """
-        warnings.warn("LogOnAccess has been ported to logwrap with extended repr logic.", DeprecationWarning)
+        warnings.warn(
+            "LogOnAccess has been ported to logwrap with extended repr logic.",
+            DeprecationWarning,
+            stack level=2,
+        )
         super().__init__(fget=fget, fset=fset, fdel=fdel, doc=doc)
 
         if logger is None or isinstance(logger, logging.Logger):
