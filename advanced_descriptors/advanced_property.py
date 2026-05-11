@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#    Copyright 2016 - 2022 Alexey Stepanov aka penguinolog
+#    Copyright 2016 - 2026 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -22,6 +22,8 @@ import typing
 if typing.TYPE_CHECKING:
     from collections.abc import Callable
 
+    from typing_extensions import Self
+
 __all__ = ("AdvancedProperty",)
 
 _OwnerClassT = typing.TypeVar("_OwnerClassT")
@@ -33,7 +35,7 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
     """Property with class-wide getter.
 
     This property allows implementation of read-only getter for classes
-    in additional to normal set of getter/setter/deleter on instance.
+    in additional to the normal set of getter/setter/deleter on instance.
     Implements almost full @property interface,
     except __doc__ due to class-wide nature.
 
@@ -144,7 +146,7 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
         :type fset: Callable[[typing.Any, typing.Any], None] | None
         :param fdel: normal deleter.
         :type fdel: Callable[[typing.Any, ], None] | None
-        :param fcget: class getter. Used as normal, if normal is None.
+        :param fcget: class getter. Used as normal if normal is None.
         :type fcget: Callable[[typing.Any, ], typing.Any] | None
 
         .. note:: doc argument is not supported due to class wide getter usage.
@@ -154,21 +156,22 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
         self.__fcget: Callable[[type[_OwnerClassT]], _ClassReturnT] | None = fcget
 
     @typing.overload  # type: ignore[override]
-    def __get__(self, instance: None, owner: type[_OwnerClassT]) -> _ClassReturnT:
+    def __get__(self, instance: None, owner: type[_OwnerClassT], /) -> _ClassReturnT:
         """Class method."""
 
     @typing.overload
-    def __get__(self, instance: _OwnerClassT, owner: type[_OwnerClassT] | None = None) -> _ReturnT:
+    def __get__(self, instance: _OwnerClassT, owner: type[_OwnerClassT] | None = None, /) -> _ReturnT:
         """Normal method."""
 
     def __get__(
         self,
         instance: _OwnerClassT | None,
         owner: type[_OwnerClassT] | None = None,
+        /,
     ) -> _ClassReturnT | _ReturnT:
         """Get descriptor.
 
-        :param instance: Owner class instance. Filled only if instance created, else None.
+        :param instance: Owner class instance. Filled only if an instance is created, else None.
         :type instance: owner | None
         :param owner: Owner class for property.
         :return: getter call result if getter presents
@@ -177,7 +180,7 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
         """
         if owner is not None and (instance is None or self.fget is None):
             if self.__fcget is None:
-                raise AttributeError()
+                raise AttributeError("Class getter is not available and instance is not provided or getter is not set.")
             return self.__fcget(owner)
         return super().__get__(instance, owner)  # type: ignore[return-value]
 
@@ -193,7 +196,7 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
     def cgetter(
         self,
         fcget: Callable[[type[_OwnerClassT]], _ClassReturnT] | None,
-    ) -> AdvancedProperty[_OwnerClassT, _ReturnT, _ClassReturnT]:
+    ) -> Self:
         """Descriptor to change the class wide getter on a property.
 
         :param fcget: new class-wide getter.

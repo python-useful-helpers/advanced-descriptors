@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#    Copyright 2017 - 2022 Alexey Stepanov aka penguinolog
+#    Copyright 2017 - 2026 Alexey Stepanov aka penguinolog
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -127,17 +127,22 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
         self.__name = name
 
     @typing.overload
-    def __get__(self, instance: None, owner: typing.Any) -> Callable[..., _ClassMethodReturnT]:
+    def __get__(self, instance: None, owner: None, /) -> typing.NoReturn:
+        """Not bound to class context."""
+
+    @typing.overload
+    def __get__(self, instance: None, owner: typing.Any, /) -> Callable[..., _ClassMethodReturnT]:
         """Class method."""
 
     @typing.overload
-    def __get__(self, instance: typing.Any, owner: typing.Any) -> Callable[..., _MethodReturnT]:
+    def __get__(self, instance: typing.Any, owner: typing.Any, /) -> Callable[..., _MethodReturnT]:
         """Normal method."""
 
     def __get__(
         self,
         instance: typing.Any | None,
         owner: typing.Any,
+        /,
     ) -> Callable[..., _MethodReturnT | _ClassMethodReturnT]:
         """Get descriptor.
 
@@ -184,7 +189,7 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
     def __name__(self) -> str:  # pragma: no cover
         """Read-only name.
 
-        :return: attribute name (may be overridden)
+        :return: attribute name (maybe overridden)
         :rtype: str
         """
         return self.__name
