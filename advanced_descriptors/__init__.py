@@ -13,23 +13,26 @@
 
 """Advanced descriptors for special cases."""
 
-# Local Implementation
+from __future__ import annotations
+
+from ._version import __version__
+from ._version import __version_tuple__
 from .advanced_property import AdvancedProperty
 from .log_on_access import LogOnAccess
 from .separate_class_method import SeparateClassMethod
 
-__all__ = ("SeparateClassMethod", "AdvancedProperty", "LogOnAccess")
+__all__ = (
+    "AdvancedProperty",
+    "LogOnAccess",
+    "SeparateClassMethod",
+    "__version__",
+    "__version_tuple__",
+)
 
-try:
-    # Local Implementation
-    from ._version import version as __version__
-except ImportError:
-    pass
-
-__author__ = "Alexey Stepanov"
+__author__ = "Aleksei Stepanov"
 __author_email__ = "penguinolog@gmail.com"
 __maintainers__ = {
-    "Alexey Stepanov": "penguinolog@gmail.com",
+    "Aleksei Stepanov": "penguinolog@gmail.com",
     "Antonio Esposito": "esposito.cloud@gmail.com",
     "Dennis Dmitriev": "dis-xcom@gmail.com",
 }

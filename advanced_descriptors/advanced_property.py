@@ -17,11 +17,9 @@
 
 from __future__ import annotations
 
-# Standard Library
 import typing
 
 if typing.TYPE_CHECKING:
-    # Standard Library
     from collections.abc import Callable
 
 __all__ = ("AdvancedProperty",)
@@ -48,12 +46,15 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
     >>> class LikeNormalProperty:
     ...     def __init__(self):
     ...         self.val = 42
+    ...
     ...     @AdvancedProperty
     ...     def prop(self):
     ...         return self.val
+    ...
     ...     @prop.setter
     ...     def prop(self, new_val):
     ...         self.val = new_val
+    ...
     ...     @prop.deleter
     ...     def prop(self):
     ...         self.val = 0
@@ -63,7 +64,7 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
     >>> test_instance.prop
     42
 
-    >>> test_instance.prop=43
+    >>> test_instance.prop = 43
     >>> test_instance.prop
     43
 
@@ -80,25 +81,29 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
     >>> class ExtendedProperty:
     ...     def __init__(self):
     ...         self.val = 21
+    ...
     ...     @AdvancedProperty
     ...     def prop(self):
     ...         return self.val
+    ...
     ...     @prop.setter
     ...     def prop(self, new_val):
     ...         self.val = new_val
+    ...
     ...     @prop.deleter
     ...     def prop(self):
     ...         self.val = -1
+    ...
     ...     @prop.cgetter
     ...     def prop(cls):
-    ...         return 'self.val'
+    ...         return "self.val"
 
     >>> test_instance = ExtendedProperty()
 
     >>> test_instance.prop
     21
 
-    >>> test_instance.prop=20
+    >>> test_instance.prop = 20
     >>> test_instance.prop
     20
 
@@ -113,6 +118,7 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
     >>> class ClassProperty:
     ...     def _getter(cls):
     ...         return cls
+    ...
     ...     prop = AdvancedProperty(fcget=_getter)  # special case
 
 
@@ -147,7 +153,7 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
 
         self.__fcget: Callable[[type[_OwnerClassT]], _ClassReturnT] | None = fcget
 
-    @typing.overload
+    @typing.overload  # type: ignore[override]
     def __get__(self, instance: None, owner: type[_OwnerClassT]) -> _ClassReturnT:
         """Class method."""
 
@@ -173,7 +179,7 @@ class AdvancedProperty(property, typing.Generic[_OwnerClassT, _ReturnT, _ClassRe
             if self.__fcget is None:
                 raise AttributeError()
             return self.__fcget(owner)
-        return super().__get__(instance, owner)  # type: ignore[no-any-return]
+        return super().__get__(instance, owner)  # type: ignore[return-value]
 
     @property
     def fcget(self) -> Callable[[type[_OwnerClassT]], _ClassReturnT] | None:

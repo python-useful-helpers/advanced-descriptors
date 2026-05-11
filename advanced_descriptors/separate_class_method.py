@@ -17,12 +17,10 @@
 
 from __future__ import annotations
 
-# Standard Library
 import functools
 import typing
 
 if typing.TYPE_CHECKING:
-    # Standard Library
     from collections.abc import Callable
 
 __all__ = ("SeparateClassMethod",)
@@ -38,10 +36,11 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
 
     >>> class WithNormalMethod:  # no wrapper should be used
     ...     def __init__(self):
-    ...         self.val=42
+    ...         self.val = 42
+    ...
     ...     @SeparateClassMethod
     ...     def set_val(self, new_val):
-    ...         self.val=new_val
+    ...         self.val = new_val
 
     >>> tst_obj = WithNormalMethod()
     >>> tst_obj.val
@@ -58,14 +57,17 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
 
     >>> class WithSeparateMethod:
     ...     val = 33
+    ...
     ...     def __init__(self):
-    ...         self.val=42
+    ...         self.val = 42
+    ...
     ...     @SeparateClassMethod
     ...     def set_val(self, new_val):
-    ...         self.val=new_val
+    ...         self.val = new_val
+    ...
     ...     @set_val.class_method
     ...     def set_val(cls, new_val):
-    ...         cls.val=new_val
+    ...         cls.val = new_val
 
     >>> tst_obj = WithSeparateMethod()
     >>> WithSeparateMethod.val
@@ -90,6 +92,7 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
     >>> class WithClassMethod:  # @classmethod should be used
     ...     def _func(cls):
     ...         return cls
+    ...
     ...     meth = SeparateClassMethod(cmeth=_func)
 
     >>> WithClassMethod.meth() is WithClassMethod
@@ -99,7 +102,7 @@ class SeparateClassMethod(typing.Generic[_MethodReturnT, _ClassMethodReturnT]):
     True
     """
 
-    __slots__ = ("__instance_method", "__class_method", "__owner", "__name")
+    __slots__ = ("__class_method", "__instance_method", "__name", "__owner")
 
     def __init__(
         self,
